@@ -1,23 +1,24 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState } from 'react';
+import ImageUpload from './ImageUpload';
+import imglyRemoveBackground from "@imgly/background-removal";
 
 function App() {
+  const [image, setImage] = useState(null);
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const blob = await imglyRemoveBackground(file);
+      const url = URL.createObjectURL(blob);
+      setImage(url);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ImageUpload onImageUpload={handleImageUpload} />
+      {image && <img src={image} alt="Processed" />}
     </div>
   );
 }
