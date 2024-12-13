@@ -4,10 +4,12 @@ import ImageUpload from './ImageUpload';
 import { removeBackground } from "@imgly/background-removal";
 import scaleImage from './ScaleImage';
 import CropImage from './CropImage';
+import fillTransparentParts from './BackgroundFill';
 
 function App() {
   const [processedImage, setProcessedImage] = useState(null); // For background removal
   const [scaledImage, setScaledImage] = useState(null); // For image scaling
+  const [filledImage, setFilledImage] = useState(null); // For background fill
 
   const handleImageUploadForProcessing = async (event) => {
     const file = event.target.files[0];
@@ -33,6 +35,22 @@ function App() {
     }
   };
 
+  const handleImageUploadForFilling = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const image = new Image();
+      image.src = URL.createObjectURL(file);
+
+      try {
+        const filledBlob = await fillTransparentParts(image, 'blue'); // Fill with blue
+        const url = URL.createObjectURL(filledBlob);
+        setFilledImage(url);
+      } catch (error) {
+        console.error('Error filling transparent parts:', error);
+      }
+    }
+  };
+
   return (
     <div className="App">
       {/* Background Removal */}
@@ -53,6 +71,13 @@ function App() {
       <div>
         <h3>Crop Image</h3>
         <CropImage />
+      </div>
+
+      {/* Fill Transparent Background */}
+      <div>
+        <h3>Fill Transparent Background</h3>
+        <input type="file" accept="image/*" onChange={handleImageUploadForFilling} />
+        {filledImage && <img src={filledImage} alt="Filled Background" />}
       </div>
     </div>
   );
