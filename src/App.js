@@ -1,21 +1,26 @@
 import './App.css';
 import React, { useState } from 'react';
+import ImageUpload from './ImageUpload';
 import { removeBackground } from "@imgly/background-removal";
 import { resizeImage } from './utils/resizeImage';
 import CropImage from './CropImage';
-import { fillTransparentParts } from './utils/BackgroundFill';
+import { cropImage } from './utils/cropImage';
 import { convertToBlackAndWhite } from './utils/BlackAndWhite';
 import { invertColors } from './utils/InvertColors';
 import { saturateImage } from './utils/SaturateImage';
+import { fillTransparentParts } from './utils/BackgroundFill';
 
 function App() {
   const [image, setImage] = useState(null); // Store the uploaded image as-is
   const [processedImage, setProcessedImage] = useState(null); // For background removal
-  const [filledImage, setFilledImage] = useState(null);
-  const [resizedImage, setResizedImage] = useState(null); // Store the resized image
   const [bwImage, setBwImage] = useState(null); // For B&W
   const [invertedImage, setInvertedImage] = useState(null); // For Inverted Colors
   const [saturatedImage, setSaturatedImage] = useState(null); // For Saturation
+  const [fillBackground, setFillBackground] = useState(true);
+  const [resizeAfterProcess, setResizeAfterProcess] = useState(false);
+  const [skipBackgroundRemoval, setSkipBackgroundRemoval] = useState(false); // New state
+  const [applyCrop, setApplyCrop] = useState(false); // New state for cropping
+  const [autoCrop, setAutoCrop] = useState(true); // State for auto-crop option
 
   // Handle image upload
   const handleImageUpload = (event) => {
@@ -33,46 +38,57 @@ function App() {
   // Generate the background removal and color fill once 'Generate' is clicked
   const handleGenerate = async () => {
     if (image) {
-        try {
-            console.log('Starting background removal...');
-            // Process the image with the background removal function
-            const blob = await removeBackground(image);
-            const url = URL.createObjectURL(blob);
-            setProcessedImage(url); // Set the processed image as the processedImage state
-
-            // Create a new image object for the next step
-            const img = new Image();
-            img.src = url;
-            img.onload = async () => {
-                console.log('Image loaded, starting to fill transparent parts...');
-                const filledBlob = await fillTransparentParts(img, 'blue');
-                const filledUrl = URL.createObjectURL(filledBlob);
-                setFilledImage(filledUrl); // Set the filled image
-            };
-        } catch (error) {
-            console.error('Error removing background or filling transparent parts:', error);
+      try {
+        let finalBlob;
+  
+        if (!skipBackgroundRemoval) {
+          console.log('Starting background removal...');
+          // Remove background
+          const removedBackgroundBlob = await removeBackground(image);
+          console.log('Background removed:', removedBackgroundBlob);
+          finalBlob = removedBackgroundBlob;
+        } else {
+          console.log('Skipping background removal...');
+          finalBlob = await fetch(image).then((res) => res.blob()); // Use original image as Blob
         }
+  
+        // Fill background if needed
+        if (fillBackground) {
+          console.log('Filling transparent parts...');
+          finalBlob = await fillTransparentParts(finalBlob, 'blue');
+          console.log('Transparent parts filled with blue.');
+        } else {
+          console.log('Keeping original or transparent background.');
+        }
+
+        // Apply cropping if enabled
+        if (applyCrop) {
+          console.log('Applying crop...');
+          const cropOptions = autoCrop
+            ? { autoCrop: true } // Auto-crop option
+            : { manualCrop: true, croppedArea: manualCropArea }; // Manual crop option (ensure `manualCropArea` is captured)
+          finalBlob = await cropImage(finalBlob, cropOptions);
+          console.log('Cropping completed.');
+        }
+  
+        // Convert Blob to URL
+        let finalUrl = URL.createObjectURL(finalBlob);
+  
+        // Resize if needed
+        if (resizeAfterProcess) {
+          console.log('Resizing image...');
+          const resizedBlob = await resizeImage(finalUrl, 55); // Assuming 55mm height
+          finalUrl = resizedBlob;
+          console.log('Image resized:', resizedBlob);
+        }
+  
+        setProcessedImage(finalUrl); // Set the final processed image URL
+        console.log('Final processed image:', finalUrl);
+      } catch (error) {
+        console.error('Error during processing:', error);
+      }
     } else {
-        console.log('No image uploaded.');
-    }
-};
-
-  const handleResize = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          console.log('Resizing Image...');
-          // Resize the image to 55mm in height
-          const resizedUrl = await resizeImage(reader.result, 55); 
-          console.log('Resized Image URL:', resizedUrl);
-          setResizedImage(resizedUrl); // Set the resized image URL
-        } catch (error) {
-          console.error('Error resizing image:', error);
-        }
-      };
-      reader.readAsDataURL(file);
+      console.log('No image uploaded.');
     }
   };
 
@@ -124,11 +140,60 @@ function App() {
   return (
     <div className="App">
       {/* Background Removal */}
-      <div>
-        <h3>Remove Background</h3>
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
+      <div className="image-upload">
+        <h2>Upload an Image</h2>
+        <ImageUpload onImageUpload={handleImageUpload} />
+        
         {image && <img src={image} alt="Uploaded" style={{ maxWidth: '300px', marginTop: '10px' }} />}
+        <label>
+          <input
+            type="checkbox"
+            checked={skipBackgroundRemoval}
+            onChange={() => setSkipBackgroundRemoval(!skipBackgroundRemoval)}
+          />
+          Skip background removal
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={fillBackground}
+            onChange={() => setFillBackground(!fillBackground)}
+          />
+          Fill background
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={applyCrop}
+            onChange={() => setApplyCrop(!applyCrop)}
+          />
+          Apply cropping
+        </label>
+
+        {applyCrop && (
+          <div>
+            <label>
+              <input
+                type="checkbox"
+                checked={autoCrop}
+                onChange={() => setAutoCrop(!autoCrop)}
+              />
+              Auto-crop
+            </label>
+            <p>Or manually crop the image below:</p>
+            <CropImage />
+          </div>
+        )}
+        <label>
+          <input
+            type="checkbox"
+            checked={resizeAfterProcess}
+            onChange={() => setResizeAfterProcess(!resizeAfterProcess)}
+          />
+          Resize to passport height - 45mm
+        </label>
       </div>
+
       {image && (
         <div className="generate-button">
           <button onClick={handleGenerate}>Generate</button>
@@ -141,27 +206,6 @@ function App() {
           <img src={processedImage} alt="Processed" style={{ maxWidth: '300px', marginTop: '10px' }} />
         </div>
       )}
-
-      {/* Filled Image */}
-      {filledImage && (
-        <div className="filled-image">
-          <h2>Filled Image</h2>
-          <img src={filledImage} alt="Filled with blue background" style={{ maxWidth: '300px', marginTop: '10px' }} />
-        </div>
-      )}
-
-      {/* Image Resize */}
-      <div>
-        <h3>Resize Image</h3>
-        <input type="file" accept="image/*" onChange={handleResize} />
-        {resizedImage && <img src={resizedImage} alt="Resized" />}
-      </div>
-
-      {/* Image Cropping */}
-      <div>
-        <h3>Crop Image</h3>
-        <CropImage />
-      </div>
 
       {/* Make Image Black and White */}
       <div>
