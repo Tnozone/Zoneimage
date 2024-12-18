@@ -1,26 +1,28 @@
 import './App.css';
 import React, { useState } from 'react';
-import ImageUpload from './ImageUpload';
-import { removeBackground } from "@imgly/background-removal";
-import { resizeImage } from './utils/resizeImage';
-import CropImage from './CropImage';
-import { cropImage } from './utils/cropImage';
+import { removeBackground } from '@imgly/background-removal'; // Correct import
+import { fillTransparency } from './fillTransparency'; // Import the fill function
+import { invertColors } from './utils/InvertColors'; // Import the invertColors function
 import { convertToBlackAndWhite } from './utils/BlackAndWhite';
-import { invertColors } from './utils/InvertColors';
-import { saturateImage } from './utils/SaturateImage';
-import { fillTransparentParts } from './utils/BackgroundFill';
+import { adjustSaturation } from './utils/AdjustSaturation';
+import { autoCrop as performAutoCrop } from './utils/AutoCrop';
+import { ManualCrop } from './ManualCrop';
 
 function App() {
-  const [image, setImage] = useState(null); // Store the uploaded image as-is
-  const [processedImage, setProcessedImage] = useState(null); // For background removal
-  const [bwImage, setBwImage] = useState(null); // For B&W
-  const [invertedImage, setInvertedImage] = useState(null); // For Inverted Colors
-  const [saturatedImage, setSaturatedImage] = useState(null); // For Saturation
-  const [fillBackground, setFillBackground] = useState(true);
-  const [resizeAfterProcess, setResizeAfterProcess] = useState(false);
-  const [skipBackgroundRemoval, setSkipBackgroundRemoval] = useState(false); // New state
-  const [applyCrop, setApplyCrop] = useState(false); // New state for cropping
-  const [autoCrop, setAutoCrop] = useState(true); // State for auto-crop option
+  const [image, setImage] = useState(null); // Original image
+  const [processedImage, setProcessedImage] = useState(null); // Processed image
+  const [backgroundRemoval, setBackgroundRemoval] = useState(false); // Checkbox state for background removal
+  const [colorFill, setColorFill] = useState("#ffffff"); // Color for filling transparent parts
+  const [invert, setInvert] = useState(false); // Checkbox state for color inversion
+  const [blackAndWhite, setBlackAndWhite] = useState(false); // Checkbox state for color inversion
+  const [keepTransparent, setKeepTransparent] = useState(false); // Checkbox state for keeping transparency
+  const [saturate, setSaturate] = useState(false); // Checkbox state for saturation
+  const [desaturate, setDesaturate] = useState(false); // Checkbox state for desaturation
+  const [cropEnabled, setCropEnabled] = useState(false); // Checkbox state for cropping
+  const [autoCrop, setAutoCrop] = useState(true); // Auto-crop vs manual crop mode
+
+
+  const fillThreshold = 150; // Fixed fill threshold for less aggressive filling (no need for dynamic state)
 
   // Handle image upload
   const handleImageUpload = (event) => {
@@ -28,204 +30,290 @@ function App() {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setImage(reader.result); // Set uploaded image as the image state
-        setProcessedImage(null); // Reset the processed image
+        setImage(reader.result); // Store the base64 image data
+        setProcessedImage(null); // Reset processed image
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // Generate the background removal and color fill once 'Generate' is clicked
+  // Handle checkbox toggle for background removal
+  const handleBackgroundRemovalChange = () => {
+    setBackgroundRemoval(!backgroundRemoval);
+  };
+
+  // Handle checkbox toggle for keeping transparency
+  const handleKeepTransparentChange = () => {
+    setKeepTransparent(!keepTransparent);
+  };
+
+  // Handle checkbox toggle for color inversion
+  const handleInvertChange = () => {
+    setInvert(!invert);
+  };
+
+  // Handle mutually exclusive saturation/desaturation checkboxes
+  const handleSaturateChange = () => {
+    setSaturate(!saturate);
+    if (!saturate) setDesaturate(false); // Uncheck desaturate if saturate is checked
+  };
+
+  const handleDesaturateChange = () => {
+    setDesaturate(!desaturate);
+    if (!desaturate) setSaturate(false); // Uncheck saturate if desaturate is checked
+  };
+
+  // Handle checkbox toggle for monochrome
+  const handleBlackAndWhiteChange = () => {
+    setBlackAndWhite(!blackAndWhite);
+  };
+
+  // Handle color change (Color Picker)
+  const handleColorChange = (event) => {
+    setColorFill(event.target.value);
+  };
+
+  // Handle Generate button click
   const handleGenerate = async () => {
     if (image) {
       try {
-        let finalBlob;
-  
-        if (!skipBackgroundRemoval) {
-          console.log('Starting background removal...');
-          // Remove background
-          const removedBackgroundBlob = await removeBackground(image);
-          console.log('Background removed:', removedBackgroundBlob);
-          finalBlob = removedBackgroundBlob;
+        let processedBlob;
+
+        // Step 1: Background removal
+        if (backgroundRemoval) {
+          // If background removal is checked, process the image
+          const base64ImageData = image.split(',')[1]; // Extract Base64 part from the data URL
+          const byteArray = Uint8Array.from(atob(base64ImageData), (c) => c.charCodeAt(0)); // Convert to byte array
+          
+          // Create a Blob from the byte array
+          const imageBlob = new Blob([byteArray], { type: 'image/png' });
+
+          // Process the image using the correct removeBackground function
+          processedBlob = await removeBackground(imageBlob);
         } else {
-          console.log('Skipping background removal...');
-          finalBlob = await fetch(image).then((res) => res.blob()); // Use original image as Blob
-        }
-  
-        // Fill background if needed
-        if (fillBackground) {
-          console.log('Filling transparent parts...');
-          finalBlob = await fillTransparentParts(finalBlob, 'blue');
-          console.log('Transparent parts filled with blue.');
-        } else {
-          console.log('Keeping original or transparent background.');
+          // If no background removal, convert the image URL to a Blob
+          processedBlob = await fetch(image).then((res) => res.blob());
         }
 
-        // Apply cropping if enabled
-        if (applyCrop) {
-          console.log('Applying crop...');
-          const cropOptions = autoCrop
-            ? { autoCrop: true } // Auto-crop option
-            : { manualCrop: true, croppedArea: manualCropArea }; // Manual crop option (ensure `manualCropArea` is captured)
-          finalBlob = await cropImage(finalBlob, cropOptions);
-          console.log('Cropping completed.');
+        // Check if the processedBlob is valid before proceeding
+        if (!processedBlob) {
+          throw new Error('Background removal failed, received invalid Blob.');
         }
-  
-        // Convert Blob to URL
-        let finalUrl = URL.createObjectURL(finalBlob);
-  
-        // Resize if needed
-        if (resizeAfterProcess) {
-          console.log('Resizing image...');
-          const resizedBlob = await resizeImage(finalUrl, 55); // Assuming 55mm height
-          finalUrl = resizedBlob;
-          console.log('Image resized:', resizedBlob);
-        }
-  
-        setProcessedImage(finalUrl); // Set the final processed image URL
-        console.log('Final processed image:', finalUrl);
+
+        // Create an image object from the processed Blob
+        const img = new Image();
+        img.src = URL.createObjectURL(processedBlob);
+        
+        img.onload = async () => {
+          // Step 2: Fill fully transparent areas with selected color
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          
+          // Set canvas dimensions to match the image
+          canvas.width = img.width;
+          canvas.height = img.height;
+          
+          // Draw the image on the canvas
+          ctx.drawImage(img, 0, 0);
+
+          // If keep transparency is unchecked, fill transparency
+          if (!keepTransparent) {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            fillTransparency(ctx, imageData, colorFill, fillThreshold);
+          }
+
+          // Convert the canvas back to a Blob and create a URL for the processed image
+          const finalBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+          let finalUrl = URL.createObjectURL(finalBlob);
+
+          // Step 3: Invert colors if the checkbox is checked
+          if (invert) {
+            finalUrl = await invertColors(finalUrl); // Apply color inversion
+          }
+
+          // Step 4: Adjust saturation/desaturation
+          if (saturate || desaturate) {
+            finalUrl = await adjustSaturation(finalUrl, saturate);
+          }
+
+          // Step 5: Make black and white if the checkbox is checked
+          if (blackAndWhite) {
+            finalUrl = await convertToBlackAndWhite(finalUrl); // Apply black and wite
+          }
+
+          // Step 7: Cropping
+          if (cropEnabled) {
+            if (autoCrop) {
+              console.log('Performing auto-crop...');
+              finalUrl = await performAutoCrop(finalUrl);
+            } else {
+              return;
+            }
+          }
+
+          setProcessedImage(finalUrl);
+        };
       } catch (error) {
         console.error('Error during processing:', error);
       }
     } else {
-      console.log('No image uploaded.');
-    }
-  };
-
-  const handleBWImageUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const bwResult = await convertToBlackAndWhite(reader.result);
-        setBwImage(bwResult);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleInvertColors = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const inverted = await invertColors(reader.result);
-          setInvertedImage(inverted);
-        } catch (error) {
-          console.error('Error inverting colors:', error);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSaturateImage = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          // Adjust the saturation factor as needed (e.g., 1.5 increases saturation, 0.5 decreases)
-          const saturated = await saturateImage(reader.result, 1.5);
-          setSaturatedImage(saturated);
-        } catch (error) {
-          console.error('Error saturating image:', error);
-        }
-      };
-      reader.readAsDataURL(file);
+      alert('Please upload an image first.');
     }
   };
 
   return (
     <div className="App">
-      {/* Background Removal */}
-      <div className="image-upload">
-        <h2>Upload an Image</h2>
-        <ImageUpload onImageUpload={handleImageUpload} />
-        
-        {image && <img src={image} alt="Uploaded" style={{ maxWidth: '300px', marginTop: '10px' }} />}
-        <label>
-          <input
-            type="checkbox"
-            checked={skipBackgroundRemoval}
-            onChange={() => setSkipBackgroundRemoval(!skipBackgroundRemoval)}
-          />
-          Skip background removal
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={fillBackground}
-            onChange={() => setFillBackground(!fillBackground)}
-          />
-          Fill background
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={applyCrop}
-            onChange={() => setApplyCrop(!applyCrop)}
-          />
-          Apply cropping
-        </label>
+      <h1>Image Background Removal & Color Fill</h1>
+      
+      {/* Image Upload */}
+      <div>
+        <label htmlFor="image-upload">Upload an Image:</label>
+        <input
+          type="file"
+          id="image-upload"
+          accept="image/*"
+          onChange={handleImageUpload}
+        />
+      </div>
 
-        {applyCrop && (
+      {/* Background Removal Checkbox */}
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={backgroundRemoval}
+            onChange={handleBackgroundRemovalChange}
+          />
+          Remove Background
+        </label>
+      </div>
+
+      {/* Color Picker for Filling Transparent Areas */}
+      <div>
+        <label>
+          Choose Fill Color:
+          <input
+            type="color"
+            value={colorFill}
+            onChange={handleColorChange}
+          />
+        </label>
+      </div>
+      {/* Keep Transparency Checkbox */}
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={keepTransparent}
+            onChange={handleKeepTransparentChange}
+          />
+          Keep Transparency
+        </label>
+      </div>
+
+      {/* Color Inversion Checkbox */}
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={invert}
+            onChange={handleInvertChange}
+          />
+          Invert Colors
+        </label>
+      </div>
+
+      {/* Saturate Checkbox */}
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={saturate}
+            onChange={handleSaturateChange}
+          />
+          Saturate Image
+        </label>
+      </div>
+
+      {/* Desaturate Checkbox */}
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={desaturate}
+            onChange={handleDesaturateChange}
+          />
+          Desaturate Image
+        </label>
+      </div>
+
+      {/* Monochrome Checkbox */}
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={blackAndWhite}
+            onChange={handleBlackAndWhiteChange}
+          />
+          Monochrome
+        </label>
+      </div>
+
+      {/* Cropping options */}
+      <label>
+        <input
+          type="checkbox"
+          checked={cropEnabled}
+          onChange={(e) => setCropEnabled(e.target.checked)}
+        />
+        Enable Cropping
+      </label>
+
+      {cropEnabled && (
+        <div>
+          <label>
+            <input
+              type="radio"
+              checked={autoCrop}
+              onChange={() => setAutoCrop(true)}
+            />
+            Auto-Crop
+          </label>
+          <label>
+            <input
+              type="radio"
+              checked={!autoCrop}
+              onChange={() => setAutoCrop(false)}
+            />
+            Manual Crop
+          </label>
+        </div>
+      )}
+
+      {/* Render ManualCrop if manual crop is selected */}
+      {!autoCrop && cropEnabled && (
+        <ManualCrop
+          imageSrc={image}
+          onCropComplete={(croppedImage) => setProcessedImage(croppedImage)}
+        />
+      )}
+
+      <button onClick={handleGenerate}>Generate</button>
+
+      <div style={{ marginTop: '20px' }}>
+        {image && (
           <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={autoCrop}
-                onChange={() => setAutoCrop(!autoCrop)}
-              />
-              Auto-crop
-            </label>
-            <p>Or manually crop the image below:</p>
-            <CropImage />
+            <h3>Original Image:</h3>
+            <img src={image} alt="Original" style={{ maxWidth: '100%' }} />
           </div>
         )}
-        <label>
-          <input
-            type="checkbox"
-            checked={resizeAfterProcess}
-            onChange={() => setResizeAfterProcess(!resizeAfterProcess)}
-          />
-          Resize to passport height - 45mm
-        </label>
-      </div>
 
-      {image && (
-        <div className="generate-button">
-          <button onClick={handleGenerate}>Generate</button>
-        </div>
-      )}
-
-      {processedImage && (
-        <div className="processed-image">
-          <h2>Processed Image</h2>
-          <img src={processedImage} alt="Processed" style={{ maxWidth: '300px', marginTop: '10px' }} />
-        </div>
-      )}
-
-      {/* Make Image Black and White */}
-      <div>
-        <h3>B&W</h3>
-        <input type="file" accept="image/*" onChange={handleBWImageUpload} />
-        {bwImage && <img src={bwImage} alt="Black and White" />}
-      </div>
-
-      {/* Make Image Color Inverted */}
-      <div className="invert-colors">
-        <h2>Invert Colors</h2>
-        <input type="file" accept="image/*" onChange={handleInvertColors} />
-        {invertedImage && <img src={invertedImage} alt="Inverted Colors" />}
-      </div>
-
-      {/* Make Image Saturated */}
-      <div className="saturate-image">
-        <h2>Saturate Image</h2>
-        <input type="file" accept="image/*" onChange={handleSaturateImage} />
-        {saturatedImage && <img src={saturatedImage} alt="Saturated" />}
+        {processedImage && (
+          <div>
+            <h3>Processed Image:</h3>
+            <img src={processedImage} alt="Processed" style={{ maxWidth: '100%' }} />
+          </div>
+        )}
       </div>
     </div>
   );
