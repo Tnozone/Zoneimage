@@ -7,6 +7,8 @@ import { convertToBlackAndWhite } from './utils/BlackAndWhite';
 import { adjustSaturation } from './utils/AdjustSaturation';
 import { autoCrop as performAutoCrop } from './utils/AutoCrop';
 import { ManualCrop } from './ManualCrop';
+import { setCropping } from './utils/setCropping';
+import { scaleImage } from './utils/scaleImage';
 
 function App() {
   const [image, setImage] = useState(null); // Original image
@@ -20,7 +22,10 @@ function App() {
   const [desaturate, setDesaturate] = useState(false); // Checkbox state for desaturation
   const [cropEnabled, setCropEnabled] = useState(false); // Checkbox state for cropping
   const [autoCrop, setAutoCrop] = useState(true); // Auto-crop vs manual crop mode
-
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [scalingEnabled, setScalingEnabled] = useState(false);
+  const [scaleHeight, setScaleHeight] = useState('');
+  const [scaleWidth, setScaleWidth] = useState('');
 
   const fillThreshold = 150; // Fixed fill threshold for less aggressive filling (no need for dynamic state)
 
@@ -147,8 +152,14 @@ function App() {
               console.log('Performing auto-crop...');
               finalUrl = await performAutoCrop(finalUrl);
             } else {
-              return;
+              console.log('Performing  manual crop...');
+              finalUrl = await setCropping(finalUrl, croppedAreaPixels);
             }
+          }
+
+          // Step 8: Scaling
+          if (scalingEnabled && (scaleWidth || scaleHeight)) {
+            finalUrl = await scaleImage(finalUrl, scaleWidth, scaleHeight);
           }
 
           setProcessedImage(finalUrl);
@@ -294,9 +305,43 @@ function App() {
       {!autoCrop && cropEnabled && (
         <ManualCrop
           imageSrc={image}
-          onCropComplete={(croppedImage) => setProcessedImage(croppedImage)}
+          onCropParametersChange={setCroppedAreaPixels}
         />
       )}
+
+      {/* Scaling Options */}
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={scalingEnabled}
+            onChange={(e) => setScalingEnabled(e.target.checked)}
+          />
+          Enable Scaling
+        </label>
+        {scalingEnabled && (
+          <div>
+            <label>
+              Width (mm):
+              <input
+                type="number"
+                value={scaleWidth}
+                onChange={(e) => setScaleWidth(e.target.value)}
+                disabled={scaleHeight} // Disable if height is set
+              />
+            </label>
+            <label>
+              Height (mm):
+              <input
+                type="number"
+                value={scaleHeight}
+                onChange={(e) => setScaleHeight(e.target.value)}
+                disabled={scaleWidth} // Disable if width is set
+              />
+            </label>
+          </div>
+        )}
+      </div>
 
       <button onClick={handleGenerate}>Generate</button>
 

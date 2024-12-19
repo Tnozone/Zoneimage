@@ -1,149 +1,63 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Cropper from 'react-easy-crop';
 
-export const ManualCrop = ({ imageSrc, onCropComplete }) => {
-  const [cropDimensions, setCropDimensions] = useState({
-    width: 200,   // Default width for the crop box
-    height: 300,  // Default height for the crop box
-    x: 50,        // Default x position of the crop box
-    y: 50,        // Default y position of the crop box
-  });
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [image, setImage] = useState(null);
-  const [canvasRef, setCanvasRef] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
+export const ManualCrop = ({ imageSrc, onCropParametersChange }) => {
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [height, setHeight] = useState(1); // Default height ratio
+  const [width, setWidth] = useState(1);  // Default width ratio
 
-  const imageRef = useRef(null);
-
-  useEffect(() => {
-    const loadImage = async () => {
-      const img = new Image();
-      img.src = imageSrc;
-      img.onload = () => {
-        setImage(img);
-      };
-    };
-
-    if (imageSrc) {
-      loadImage();
-    }
-  }, [imageSrc]);
-
-  // Handle crop box resize and position
-  const handleCropBoxChange = (e) => {
-    const { name, value } = e.target;
-    setCropDimensions((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Function to generate the crop preview
-  const generateCropPreview = () => {
-    if (image && canvasRef) {
-      const canvas = canvasRef;
-      const ctx = canvas.getContext('2d');
-      canvas.width = cropDimensions.width;
-      canvas.height = cropDimensions.height;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(
-        image,
-        cropDimensions.x,
-        cropDimensions.y,
-        cropDimensions.width,
-        cropDimensions.height,
-        0,
-        0,
-        cropDimensions.width,
-        cropDimensions.height
-      );
-
-      setPreviewUrl(canvas.toDataURL('image/png'));
+  const onCropCompleteHandler = (_, croppedAreaPixels) => {
+    if (onCropParametersChange) {
+      onCropParametersChange(croppedAreaPixels);
     }
   };
 
-  // Trigger preview update whenever crop box changes
-  useEffect(() => {
-    generateCropPreview();
-  }, [cropDimensions]);
+  const handleHeightChange = (event) => {
+    const value = parseFloat(event.target.value);
+    setHeight(value > 0 ? value : 1); // Ensure height is always positive
+  };
 
-  const handleCompleteCrop = () => {
-    if (image && canvasRef) {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      canvas.width = cropDimensions.width;
-      canvas.height = cropDimensions.height;
-      ctx.drawImage(
-        image,
-        cropDimensions.x,
-        cropDimensions.y,
-        cropDimensions.width,
-        cropDimensions.height,
-        0,
-        0,
-        cropDimensions.width,
-        cropDimensions.height
-      );
-
-      onCropComplete(canvas.toDataURL('image/png'));
-    }
+  const handleWidthChange = (event) => {
+    const value = parseFloat(event.target.value);
+    setWidth(value > 0 ? value : 1); // Ensure width is always positive
   };
 
   return (
     <div style={{ marginTop: '20px' }}>
-      {/* Crop Aspect Ratio Controls */}
-      <div>
+      {/* Ratio Inputs */}
+      <div style={{ marginBottom: '10px' }}>
         <label>
-          Crop Width:
+          Height:
           <input
             type="number"
-            name="width"
-            value={cropDimensions.width}
-            onChange={handleCropBoxChange}
-            min="50"
-            max={image ? image.width : 1000}
+            value={height}
+            onChange={handleHeightChange}
+            style={{ marginLeft: '5px', marginRight: '15px' }}
           />
         </label>
         <label>
-          Crop Height:
+          Width:
           <input
             type="number"
-            name="height"
-            value={cropDimensions.height}
-            onChange={handleCropBoxChange}
-            min="50"
-            max={image ? image.height : 1000}
+            value={width}
+            onChange={handleWidthChange}
+            style={{ marginLeft: '5px' }}
           />
         </label>
       </div>
 
-      {/* Preview Box */}
-      {showPreview && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>Crop Preview:</h3>
-          <canvas ref={setCanvasRef} style={{ border: '1px solid black' }}></canvas>
-          {previewUrl && (
-            <div>
-              <h4>Preview:</h4>
-              <img src={previewUrl} alt="Crop Preview" style={{ maxWidth: '100%' }} />
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Image Display */}
-      {image && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>Original Image:</h3>
-          <img src={image.src} alt="Original" style={{ maxWidth: '100%' }} />
-        </div>
-      )}
-
-      {/* Crop Complete Button */}
-      <div>
-        <button onClick={handleCompleteCrop}>Complete Crop</button>
+      {/* Crop Area */}
+      <div style={{ position: 'relative', height: '400px', width: '100%' }}>
+        <Cropper
+          image={imageSrc}
+          crop={crop}
+          zoom={zoom}
+          aspect={width / height} // Dynamically set the aspect ratio
+          onCropChange={setCrop}
+          onCropComplete={onCropCompleteHandler}
+          onZoomChange={setZoom}
+        />
       </div>
     </div>
   );
