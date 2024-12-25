@@ -1,4 +1,5 @@
 import './App.css';
+import Header from './components/Header';
 import React, { useState } from 'react';
 import { removeBackground } from '@imgly/background-removal'; // Correct import
 import { fillTransparency } from './fillTransparency'; // Import the fill function
@@ -12,6 +13,7 @@ import { scaleImage } from './utils/scaleImage';
 
 function App() {
   const [image, setImage] = useState(null); // Original image
+  const [fileName, setFileName] = useState("Upload Image"); // file name
   const [processedImage, setProcessedImage] = useState(null); // Processed image
   const [backgroundRemoval, setBackgroundRemoval] = useState(false); // Checkbox state for background removal
   const [colorFill, setColorFill] = useState("#ffffff"); // Color for filling transparent parts
@@ -33,6 +35,9 @@ function App() {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      const truncatedName =
+        file.name.length > 20 ? file.name.slice(0, 20) + "..." : file.name;
+      setFileName(truncatedName);
       const reader = new FileReader();
       reader.onload = () => {
         setImage(reader.result); // Store the base64 image data
@@ -174,191 +179,183 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Image Background Removal & Color Fill</h1>
-      
-      {/* Image Upload */}
-      <div>
-        <label htmlFor="image-upload">Upload an Image:</label>
-        <input
-          type="file"
-          id="image-upload"
-          accept="image/*"
-          onChange={handleImageUpload}
-        />
-      </div>
-
-      {/* Background Removal Checkbox */}
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={backgroundRemoval}
-            onChange={handleBackgroundRemovalChange}
-          />
-          Remove Background
-        </label>
-      </div>
-
-      {/* Color Picker for Filling Transparent Areas */}
-      <div>
-        <label>
-          Choose Fill Color:
-          <input
-            type="color"
-            value={colorFill}
-            onChange={handleColorChange}
-          />
-        </label>
-      </div>
-      {/* Keep Transparency Checkbox */}
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={keepTransparent}
-            onChange={handleKeepTransparentChange}
-          />
-          Keep Transparency
-        </label>
-      </div>
-
-      {/* Color Inversion Checkbox */}
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={invert}
-            onChange={handleInvertChange}
-          />
-          Invert Colors
-        </label>
-      </div>
-
-      {/* Saturate Checkbox */}
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={saturate}
-            onChange={handleSaturateChange}
-          />
-          Saturate Image
-        </label>
-      </div>
-
-      {/* Desaturate Checkbox */}
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={desaturate}
-            onChange={handleDesaturateChange}
-          />
-          Desaturate Image
-        </label>
-      </div>
-
-      {/* Monochrome Checkbox */}
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={blackAndWhite}
-            onChange={handleBlackAndWhiteChange}
-          />
-          Monochrome
-        </label>
-      </div>
-
-      {/* Cropping options */}
-      <label>
-        <input
-          type="checkbox"
-          checked={cropEnabled}
-          onChange={(e) => setCropEnabled(e.target.checked)}
-        />
-        Enable Cropping
-      </label>
-
-      {cropEnabled && (
+      <Header />
+        <div className="editor">
+        <h1>Image Editor</h1>
+        
+        {/* Image Upload */}
         <div>
-          <label>
-            <input
-              type="radio"
-              checked={autoCrop}
-              onChange={() => setAutoCrop(true)}
-            />
-            Auto-Crop
-          </label>
-          <label>
-            <input
-              type="radio"
-              checked={!autoCrop}
-              onChange={() => setAutoCrop(false)}
-            />
-            Manual Crop
+          <input
+            type="file"
+            id="image-upload"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+          <label
+            htmlFor="image-upload"
+            id="image-upload-label"
+            className="upload-button"
+          >
+            {fileName}
           </label>
         </div>
-      )}
 
-      {/* Render ManualCrop if manual crop is selected */}
-      {!autoCrop && cropEnabled && (
-        <ManualCrop
-          imageSrc={image}
-          onCropParametersChange={setCroppedAreaPixels}
-        />
-      )}
+        {/* Background Removal Checkbox */}
+        <div className='backgrounds'>
+          <label>
+            <input
+              type="checkbox"
+              checked={backgroundRemoval}
+              onChange={handleBackgroundRemovalChange}
+            />
+            Remove Background
+          </label>
 
-      {/* Scaling Options */}
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={scalingEnabled}
-            onChange={(e) => setScalingEnabled(e.target.checked)}
-          />
-          Enable Scaling
-        </label>
-        {scalingEnabled && (
-          <div>
-            <label>
-              Width (mm):
+          {/* Color Picker for Filling Transparent Areas */}
+          <label>
+            Choose Background Color:
+            <input
+              type="color"
+              value={colorFill}
+              onChange={handleColorChange}
+            />
+          </label>
+          {/* Keep Transparency Checkbox */}
+          <label>
+            <input
+              type="checkbox"
+              checked={keepTransparent}
+              onChange={handleKeepTransparentChange}
+            />
+            Keep Transparency
+          </label>
+        </div>
+
+        {/* Color Inversion Checkbox */}
+        <div className='colors'>
+          <label>
+            <input
+              type="checkbox"
+              checked={invert}
+              onChange={handleInvertChange}
+            />
+            Invert Colors
+          </label>
+
+          {/* Saturate Checkbox */}
+          <label>
+            <input
+              type="checkbox"
+              checked={saturate}
+              onChange={handleSaturateChange}
+            />
+            Saturate Image
+          </label>
+
+          {/* Desaturate Checkbox */}
+          <label>
+            <input
+              type="checkbox"
+              checked={desaturate}
+              onChange={handleDesaturateChange}
+            />
+            Desaturate Image
+          </label>
+
+          {/* Monochrome Checkbox */}
+          <label>
+            <input
+              type="checkbox"
+              checked={blackAndWhite}
+              onChange={handleBlackAndWhiteChange}
+            />
+            Monochrome
+          </label>
+        </div>
+
+        {/* Cropping options */}
+        <div className='cropping'>
+          <label>
+            <input
+              type="checkbox"
+              checked={cropEnabled}
+              onChange={(e) => setCropEnabled(e.target.checked)}
+            />
+            Enable Cropping
+          </label>
+
+          {cropEnabled && (
+            <div className='radioswitch'>
               <input
-                type="number"
-                value={scaleWidth}
-                onChange={(e) => setScaleWidth(e.target.value)}
-                disabled={scaleHeight} // Disable if height is set
-              />
-            </label>
-            <label>
-              Height (mm):
+                  type="radio"
+                  id="auto-crop"
+                  checked={autoCrop}
+                  onChange={() => setAutoCrop(true)}
+                />
+              <label htmlFor="auto-crop">Auto-Crop</label>
               <input
-                type="number"
-                value={scaleHeight}
-                onChange={(e) => setScaleHeight(e.target.value)}
-                disabled={scaleWidth} // Disable if width is set
-              />
-            </label>
-          </div>
-        )}
-      </div>
+                  type="radio"
+                  id="manual-crop"
+                  checked={!autoCrop}
+                  onChange={() => setAutoCrop(false)}
+                />
+              <label htmlFor="manual-crop">Manual Crop</label>
+            </div>
+          )}
 
-      <button onClick={handleGenerate}>Generate</button>
+          {/* Render ManualCrop if manual crop is selected */}
+          {!autoCrop && cropEnabled && (
+            <ManualCrop
+              imageSrc={image}
+              onCropParametersChange={setCroppedAreaPixels}
+            />
+          )}
+        </div>
 
-      <div style={{ marginTop: '20px' }}>
-        {image && (
-          <div>
-            <h3>Original Image:</h3>
-            <img src={image} alt="Original" style={{ maxWidth: '100%' }} />
-          </div>
-        )}
+        {/* Scaling Options */}
+        <div className='scaling'>
+          <label>
+            <input
+              type="checkbox"
+              checked={scalingEnabled}
+              onChange={(e) => setScalingEnabled(e.target.checked)}
+            />
+            Enable Scaling
+          </label>
+          {scalingEnabled && (
+            <div className='scaling-labels'>
+              <label>
+                Width (mm): 
+                <input
+                  type="number"
+                  value={scaleWidth}
+                  onChange={(e) => setScaleWidth(e.target.value)}
+                  disabled={scaleHeight} // Disable if height is set
+                />
+              </label>
+              <label>
+                Height (mm): 
+                <input
+                  type="number"
+                  value={scaleHeight}
+                  onChange={(e) => setScaleHeight(e.target.value)}
+                  disabled={scaleWidth} // Disable if width is set
+                />
+              </label>
+            </div>
+          )}
+        </div>
 
-        {processedImage && (
-          <div>
-            <h3>Processed Image:</h3>
-            <img src={processedImage} alt="Processed" style={{ maxWidth: '100%' }} />
-          </div>
-        )}
+        <button className="generate" onClick={handleGenerate}>Generate</button>
+
+        <div className='result' style={{ marginTop: '20px' }}>
+          {processedImage && (
+            <div>
+              <h3>Processed Image:</h3>
+              <img src={processedImage} alt="Processed" style={{ maxWidth: '100%' }} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

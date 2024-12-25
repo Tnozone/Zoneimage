@@ -26,9 +26,9 @@ export const ManualCrop = ({ imageSrc, onCropParametersChange }) => {
   return (
     <div style={{ marginTop: '20px' }}>
       {/* Ratio Inputs */}
-      <div style={{ marginBottom: '10px' }}>
+      <div className='crop-ratio' style={{ marginBottom: '10px' }}>
         <label>
-          Height:
+          Height Ratio:
           <input
             type="number"
             value={height}
@@ -37,7 +37,7 @@ export const ManualCrop = ({ imageSrc, onCropParametersChange }) => {
           />
         </label>
         <label>
-          Width:
+          Width Ratio:
           <input
             type="number"
             value={width}
@@ -48,7 +48,7 @@ export const ManualCrop = ({ imageSrc, onCropParametersChange }) => {
       </div>
 
       {/* Crop Area */}
-      <div style={{ position: 'relative', height: '400px', width: '100%' }}>
+      <div className='cropper-preview' style={{ position: 'relative', height: '400px', width: '100%' }}>
         <Cropper
           image={imageSrc}
           crop={crop}

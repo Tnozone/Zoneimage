@@ -1,0 +1,52 @@
+:root {
+    --color-black: #090909;
+    --color-white: #ffffff;
+    --color-blue: #1e90ff;
+    --color-light-blue: #87cefa;
+    --color-dark-blue: #0056b3;
+    --font-size-small: 1.2rem;
+    --font-size-medium: 1.6rem;
+    --font-size-large: 1.8rem;
+    --font-size-x-large: 2.3rem;
+    --font-size-xx-large: 4.8rem;
+  }
+
+header {
+    background-color: var(--color-blue);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    height: 7rem;
+  }
+  
+  header .logo-container {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  header .logo-container img {
+    height: 6rem;
+    width: auto;
+  }
+  
+  header .login-link {
+    margin-left: auto;
+    border: 0.5rem solid var(--color-white);
+    padding: 0.5rem 0.5rem;
+  }
+  
+  header .login-link a {
+    font-size: var(--font-size-xx-large);
+    color: var(--color-white);
+    text-decoration: none;
+  }
+  
+  header .login-link:hover {
+    opacity: 0.8;
+  }
