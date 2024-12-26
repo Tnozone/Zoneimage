@@ -9,11 +9,19 @@ html {
   --color-blue: #1e90ff;
   --color-light-blue: #87cefa;
   --color-dark-blue: #0056b3;
+  --color-dark-grey: #6c6c6c;
+  --color-light-grey: #c6c6c6;
+  --color-grey: #a9a9a9;
+  --color-red: #dc143c;
+  --color-dark-red: #ae0c00;
   --font-size-small: 1.2rem;
 	--font-size-medium: 1.6rem;
 	--font-size-large: 1.8rem;
 	--font-size-x-large: 2.3rem;
 	--font-size-xx-large: 4.8rem;
+
+  --switch-color-primary: var(var(--color-red));
+  --switch-color-secondary: var(var(--color-dark-red));
 }
 
 body {
@@ -29,7 +37,7 @@ body {
 /* Editor Section */
 
 .editor {
-  border: 1px solid #6c6c6c;
+  border: 1px solid var(--color-dark-grey);
   border-radius: 25px;
   background-color: #fff;
   font-size: var(--font-size-medium);
@@ -55,13 +63,13 @@ body {
   gap: 3rem;
   margin-top: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #6c6c6c;
+  border-bottom: 1px solid var(--color-dark-grey);
 }
 
 .cropping, .scaling {
   margin-top: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #6c6c6c;
+  border-bottom: 1px solid var(--color-dark-grey);
 }
 
 .scaling-labels {
@@ -83,7 +91,7 @@ input[type="checkbox"] {
   height: 2rem;
   width: 4rem;
   -webkit-appearance: none;
-  background: #c6c6c6;
+  background: var(--color-light-grey);
   outline: none;
   border-radius: 20px;
   box-shadow: inset 0 0 5px rgba(0,0,0,.2);
@@ -94,7 +102,7 @@ input[type="checkbox"] {
 }
 
 input:checked[type="checkbox"] {
-  background: #dc143c;
+  background: var(--switch-color-primary);
 }
 
 input[type="checkbox"]:before {
@@ -103,7 +111,7 @@ input[type="checkbox"]:before {
   width: 2rem;
   height: 2rem;
   border-radius: 1rem;
-  background: #a9a9a9;
+  background: var(--color-grey);
   transform: scale(1.1);
   transition: left 0.5s, background 0.5s;
   box-shadow: 0 2px 5px rgba(0,0,0,.2);
@@ -112,7 +120,7 @@ input[type="checkbox"]:before {
 
 input:checked[type="checkbox"]:before {
   left: calc(100% - 2rem);
-  background: #ae0c00;
+  background: var(--switch-color-secondary);
 }
 
 input[type="number"] {
@@ -141,22 +149,22 @@ input[type="number"] {
   justify-content: center;
   padding: 5px 15px;
   margin-top: 1rem;
-  background: #f0f0f0;
-  border: 1px solid #c6c6c6;
+  background: var(--color-white);
+  border: 1px solid var(--color-light-grey);
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .radioswitch input[type="radio"]:checked + label {
-  background: #dc143c;
-  color: white;
-  border-color: #b1122b;
+  background: var(--switch-color-primary);
+  color: var(--color-white);
+  border-color: var(--switch-color-secondary);
 }
 
 .radioswitch label:hover {
   transform: scale(1.05);
-  border: 1px solid #b1122b;
+  border: 1px solid var(--switch-color-secondary);
 }
 
 input[type="color"] {
@@ -170,7 +178,7 @@ input[type="color"] {
   padding: 0;
   margin: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  outline: 2px solid #c6c6c6;
+  outline: 2px solid var(--color-light-grey);
 }
 
 input[type="color"]::-webkit-color-swatch {
@@ -191,7 +199,7 @@ input[type="color"]:hover {
 }
 
 input[type="color"]:focus {
-  outline: 2px solid #dc143c; /* Highlight border when focused */
+  outline: 2px solid var(--switch-color-primary); /* Highlight border when focused */
 }
 
 input[type="file"] {
@@ -203,8 +211,8 @@ input[type="file"] {
   padding: 10px 20px;
   font-size: 16px;
   font-weight: bold;
-  color: #fff;
-  background-color: #007bff;
+  color: var(--color-white);
+  background-color: var(--color-blue);
   border: none;
   border-radius: 25px;
   cursor: pointer;
@@ -214,16 +222,16 @@ input[type="file"] {
 }
 
 .upload-button:hover {
-  background-color: #0056b3;
+  background-color: var(--color-dark-blue);
   transform: scale(1.05);
 }
 
 .upload-button:focus {
-  outline: 2px solid #0056b3;
+  outline: 2px solid var(--color-dark-blue);
 }
 
 .upload-button:disabled {
-  background-color: #c6c6c6;
+  background-color: var(--color-light-grey);
   cursor: not-allowed;
 }
 
@@ -232,8 +240,8 @@ input[type="file"] {
   padding: 10px 20px;
   font-size: 16px;
   font-weight: bold;
-  color: #fff;
-  background-color: #007bff;
+  color: var(--color-white);
+  background-color: var(--color-blue);
   border: none;
   border-radius: 25px;
   cursor: pointer;
@@ -243,12 +251,12 @@ input[type="file"] {
 }
 
 .generate:hover {
-  background-color: #0056b3;
+  background-color: var(--color-dark-blue);
   transform: scale(1.05);
 }
 
 .generate:focus {
-  outline: 2px solid #0056b3;
+  outline: 2px solid var(--color-dark-blue);
 }
 
 .crop-ratio {
