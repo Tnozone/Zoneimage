@@ -180,7 +180,7 @@ function App() {
   return (
     <div className="App">
       <Header />
-        <div className="editor">
+      <div className="editor">
         <h1>Image Editor</h1>
         
         {/* Image Upload */}

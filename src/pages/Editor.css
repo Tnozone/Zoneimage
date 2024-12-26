@@ -4,18 +4,18 @@ html {
 }
 
 :root {
-  --color-black: #090909;
+    --color-black: #090909;
 	--color-white: #ffffff;
-  --color-blue: #1e90ff;
-  --color-light-blue: #87cefa;
-  --color-dark-blue: #0056b3;
-  --color-dark-grey: #6c6c6c;
-  --color-light-grey: #c6c6c6;
-  --color-grey: #a9a9a9;
-  --color-red: #dc143c;
-  --color-dark-red: #ae0c00;
-  --font-size-small: 1.2rem;
-	--font-size-medium: 1.6rem;
+    --color-blue: #1e90ff;
+    --color-light-blue: #87cefa;
+    --color-dark-blue: #0056b3;
+    --color-dark-grey: #6c6c6c;
+    --color-light-grey: #c6c6c6;
+    --color-grey: #a9a9a9;
+    --color-red: #dc143c;
+    --color-dark-red: #ae0c00;
+    --font-size-small: 1.2rem;
+    --font-size-medium: 1.6rem;
 	--font-size-large: 1.8rem;
 	--font-size-x-large: 2.3rem;
 	--font-size-xx-large: 4.8rem;
@@ -28,10 +28,6 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-} 
-
-.App {
-  text-align: center;
 }
 
 /* Editor Section */

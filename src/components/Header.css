@@ -50,3 +50,21 @@ header {
   header .login-link:hover {
     opacity: 0.8;
   }
+
+  @media (max-width: 768px) {
+    header .logo-container {
+      position: unset;
+      transform: none;
+      left: 5%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    header .logo-container img {
+      height: 5rem;
+    }
+
+    header .login-link a {
+      font-size: var(--font-size-x-large);
+    }
+  }

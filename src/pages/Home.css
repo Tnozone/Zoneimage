@@ -1,0 +1,61 @@
+html {
+	scroll-behavior: smooth;
+	font-size: 62.5%;
+}
+
+:root {
+  --color-black: #090909;
+	--color-white: #ffffff;
+  --color-blue: #1e90ff;
+  --color-light-blue: #87cefa;
+  --color-dark-blue: #0056b3;
+  --font-size-small: 1.2rem;
+	--font-size-medium: 1.6rem;
+	--font-size-large: 1.8rem;
+	--font-size-x-large: 2.3rem;
+	--font-size-xx-large: 4.8rem;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+main {
+    background-color: var(--color-light-blue);
+    padding: 2rem 6rem;
+    display: flex;
+    flex-direction: column;
+}
+
+main .intro, main .howto {
+    background-color: var(--color-white);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2rem;
+}
+
+h2 {
+    font-size: var(--font-size-x-large);
+}
+
+main .intro-text, main .howto-text {
+    font-size: var(--font-size-medium);
+    color: var(--color-black);
+    padding: 1rem 2rem;
+    text-align: left;
+    flex: 1;
+}
+
+main .intro .intro-text a {
+    font-size: var(--font-size-x-large);
+}
+
+.example-img img, .howto-example img {
+    width: 50rem;
+    height: auto;
+    padding: 1rem 2rem;
+}
