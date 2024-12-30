@@ -6,10 +6,10 @@ const Header = () => {
     return (
       <header>
         <div class="logo-container">
-          <a href="/"><img src={logo} alt="Logo" /></a>
+          <a to="/"><img src={logo} alt="Logo" /></a>
         </div>
         <div class="login-link">
-          <a href="/login">LOG IN</a>
+          <a href="/Login">LOG IN</a>
         </div>
       </header>
     );

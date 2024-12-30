@@ -1,6 +1,7 @@
 html {
 	scroll-behavior: smooth;
 	font-size: 62.5%;
+  height: 100%;
 }
 
 :root {
@@ -28,6 +29,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    height: 100%;
 }
 
 /* Editor Section */
@@ -37,6 +39,12 @@ body {
   border-radius: 25px;
   background-color: #fff;
   font-size: var(--font-size-medium);
+  text-align: center;
+}
+
+h1 {
+  font-size: var(--font-size-xx-large);
+  text-align: center;
 }
 
 .cropper-preview {
@@ -97,7 +105,7 @@ label {
   justify-content: center;
 }
 
-input[type="checkbox"] {
+.editor input[type="checkbox"] {
   height: 2rem;
   width: 4rem;
   -webkit-appearance: none;
@@ -111,15 +119,21 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
-input:checked[type="checkbox"] {
+.editor input[type="checkbox"]:hover {
+  border: 3px solid var(--color-red);
+}
+
+.editor input:checked[type="checkbox"] {
   background: var(--switch-color-primary);
 }
 
-input[type="checkbox"]:before {
+.editor input[type="checkbox"]:before {
   content: '';
   position: absolute;
   width: 2rem;
   height: 2rem;
+  top: 0%;
+  left: 0.2rem;
   border-radius: 1rem;
   background: var(--color-grey);
   transform: scale(1.1);
@@ -128,7 +142,7 @@ input[type="checkbox"]:before {
   cursor: pointer;
 }
 
-input:checked[type="checkbox"]:before {
+.editor input:checked[type="checkbox"]:before {
   left: calc(100% - 2rem);
   background: var(--switch-color-secondary);
 }

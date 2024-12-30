@@ -1,6 +1,7 @@
 html {
 	scroll-behavior: smooth;
 	font-size: 62.5%;
+    height: 100%;
 }
 
 :root {
@@ -20,6 +21,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    height: 100%;
 }
 
 main {
@@ -27,6 +29,7 @@ main {
     padding: 2rem 6rem;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 main .intro, main .howto {

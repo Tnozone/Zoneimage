@@ -1,17 +1,16 @@
-import Header from './components/Header';
+
 import React, { useState } from 'react';
 import './Home.css'
 
 const Home = () => {
     return (
         <>
-            <Header />
             <main>
                 <div className="intro">
                     <div className="intro-text">
                         <h2>Modify your photos for your needs</h2>
                         <p>Do you have no photos for your passport and can't find a photographer or booth? Or do you simply wish to change your image's dimensions but don't have access to phtoshop or similar programs? Try our application for a quick and easy solution to your needs.</p>
-                        <a href="editor">Start now</a>
+                        <a href="/Editor">Start now</a>
                     </div>
                     <div className="example-img">
                         <img src="placeholder.jpg" alt="result example" />
@@ -34,7 +33,7 @@ const Home = () => {
                     <div className="howto-example">
                         <img src="placeholder.jpg" alt="editor interface" />
                     </div>
-                    <a href="editor">Start now</a>
+                    <a to="/Editor">Start now</a>
                 </div>
             </main>
       </>
