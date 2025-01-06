@@ -1,0 +1,104 @@
+html {
+	scroll-behavior: smooth;
+	font-size: 62.5%;
+}
+
+:root {
+    --color-black: #090909;
+    --color-white: #ffffff;
+    --color-blue: #1e90ff;
+    --color-light-blue: #87cefa;
+    --color-dark-blue: #0056b3;
+    --color-light-grey: #c6c6c6;
+    --font-size-small: 1.2rem;
+    --font-size-medium: 1.6rem;
+    --font-size-large: 1.8rem;
+    --font-size-x-large: 2.3rem;
+    --font-size-xx-large: 4.8rem;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+} 
+
+main {
+    background-color: var(--color-light-blue);
+    padding: 2rem 6rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Sign-Up Card */
+  .signup-card {
+    background-color: var(--color-white);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  /* Logo Styling */
+  .brand-logo img {
+    width: 100px;
+    margin-bottom: 20px;
+  }
+  
+  /* Form Fields */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  label {
+    text-align: left;
+    font-size: 0.9rem;
+  }
+  
+  input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  /* Sign-Up Button */
+  .signup-button {
+    padding: 10px;
+    background-color: #28a745;
+    color: var(--color-white);
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .signup-button:hover {
+    background-color: var(--color-dark-blue);
+  }
+  
+  /* Login Text */
+  .login-text {
+    margin-top: 15px;
+    font-size: 0.9rem;
+  }
+  
+  .login-text a {
+    color: var(--color-blue);
+    text-decoration: none;
+  }
+  
+  .login-text a:hover {
+    text-decoration: underline;
+  }

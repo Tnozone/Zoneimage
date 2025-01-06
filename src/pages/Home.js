@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import './Home.css'
+import example from '../assets/example-photo.png'
 
 const Home = () => {
     return (
@@ -13,7 +14,7 @@ const Home = () => {
                         <a href="/Editor">Start now</a>
                     </div>
                     <div className="example-img">
-                        <img src="placeholder.jpg" alt="result example" />
+                        <img src={example} alt="result example" />
                     </div>
                 </div>
                 <div className="howto">
