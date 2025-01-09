@@ -99,7 +99,7 @@ h1 {
   margin-bottom: 1rem;
 }
 
-label {
+.editor label {
   display: flex;
   align-items: center;
   justify-content: center;
