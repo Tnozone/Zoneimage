@@ -1,0 +1,307 @@
+html {
+	scroll-behavior: smooth;
+	font-size: 62.5%;
+  height: 100%;
+}
+
+:root {
+    --color-black: #090909;
+	--color-white: #ffffff;
+    --color-blue: #1e90ff;
+    --color-light-blue: #87cefa;
+    --color-dark-blue: #0056b3;
+    --color-dark-grey: #6c6c6c;
+    --color-light-grey: #c6c6c6;
+    --color-grey: #a9a9a9;
+    --color-red: #dc143c;
+    --color-dark-red: #ae0c00;
+    --font-size-small: 1.2rem;
+    --font-size-medium: 1.6rem;
+	--font-size-large: 1.8rem;
+	--font-size-x-large: 2.3rem;
+	--font-size-xx-large: 4.8rem;
+
+  --switch-color-primary: var(--color-red);
+  --switch-color-secondary: var(--color-dark-red);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    height: 100%;
+}
+
+/* Editor Section */
+
+.editor {
+  border: 1px solid var(--color-dark-grey);
+  border-radius: 25px;
+  background-color: #fff;
+  font-size: var(--font-size-medium);
+  text-align: center;
+}
+
+h1 {
+  font-size: var(--font-size-xx-large);
+  text-align: center;
+}
+
+.cropper-preview {
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.cropped-image-preview img {
+  max-width: 100%;
+  height: auto;
+}
+
+.backgrounds, .colors {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-dark-grey);
+}
+
+.cropping, .scaling {
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-dark-grey);
+}
+
+@media (max-width: 768px) {
+  .backgrounds, .colors {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .radioswitch {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.scaling-labels {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.editor label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor input[type="checkbox"] {
+  height: 2rem;
+  width: 4rem;
+  -webkit-appearance: none;
+  background: var(--color-light-grey);
+  outline: none;
+  border-radius: 20px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+  transition: .5s;
+  position: relative;
+  margin-right: 0.7rem;
+  cursor: pointer;
+}
+
+.editor input[type="checkbox"]:hover {
+  border: 3px solid var(--color-red);
+}
+
+.editor input:checked[type="checkbox"] {
+  background: var(--switch-color-primary);
+}
+
+.editor input[type="checkbox"]:before {
+  content: '';
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  top: 0%;
+  left: 0.2rem;
+  border-radius: 1rem;
+  background: var(--color-grey);
+  transform: scale(1.1);
+  transition: left 0.5s, background 0.5s;
+  box-shadow: 0 2px 5px rgba(0,0,0,.2);
+  cursor: pointer;
+}
+
+.editor input:checked[type="checkbox"]:before {
+  left: calc(100% - 2rem);
+  background: var(--switch-color-secondary);
+}
+
+input[type="number"] {
+  width: 4rem; 
+  padding: 0.2rem;
+  margin-left: 1rem;
+}
+
+.radioswitch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.radioswitch input[type="radio"] {
+  display: none;
+  height: 2rem;
+  width: 4rem;
+}
+
+.radioswitch label {
+  display: block;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 15px;
+  margin-top: 1rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-light-grey);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.radioswitch input[type="radio"]:checked + label {
+  background: var(--switch-color-primary);
+  color: var(--color-white);
+  border-color: var(--switch-color-secondary);
+}
+
+.radioswitch label:hover {
+  transform: scale(1.05);
+  border: 1px solid var(--switch-color-secondary);
+}
+
+input[type="color"] {
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  margin: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  outline: 2px solid var(--color-light-grey);
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border-radius: 50%;
+  border: none;
+  box-sizing: border-box;
+}
+
+/* Ensure compatibility for non-WebKit browsers */
+input[type="color"]::-moz-color-swatch {
+  border-radius: 50%;
+  border: none;
+  box-sizing: border-box;
+}
+
+input[type="color"]:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+input[type="color"]:focus {
+  outline: 2px solid var(--switch-color-primary); /* Highlight border when focused */
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color-white);
+  background-color: var(--color-blue);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  user-select: none;
+}
+
+.upload-button:hover {
+  background-color: var(--color-dark-blue);
+  transform: scale(1.05);
+}
+
+.upload-button:focus {
+  outline: 2px solid var(--color-dark-blue);
+}
+
+.upload-button:disabled {
+  background-color: var(--color-light-grey);
+  cursor: not-allowed;
+}
+
+.generate {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color-white);
+  background-color: var(--color-blue);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 2rem;
+}
+
+.generate:hover {
+  background-color: var(--color-dark-blue);
+  transform: scale(1.05);
+}
+
+.generate:focus {
+  outline: 2px solid var(--color-dark-blue);
+}
+
+.crop-ratio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.result {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin: 0 auto;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.result img {
+  width: 100%;
+  height: auto;
+}
