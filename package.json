@@ -2,13 +2,14 @@
   "name": "image-editor",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3000",
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@imgly/background-removal": "^1.5.7",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
     "cropperjs": "^1.6.2",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
@@ -26,10 +27,13 @@
   },
   "scripts": {
     "devStart": "nodemon server.js",
-    "start": "react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "nodemon server/server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "eslintConfig": {
     "extends": [
@@ -53,6 +57,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
+    "concurrently": "^9.1.2",
     "cypress": "^13.16.1",
     "cypress-file-upload": "^5.0.8",
     "dotenv": "^16.4.7",

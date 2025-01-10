@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import './Home.css'
 import example from '../assets/example-photo.png'
 
@@ -34,7 +34,7 @@ const Home = () => {
                     <div className="howto-example">
                         <img src="placeholder.jpg" alt="editor interface" />
                     </div>
-                    <a to="/Editor">Start now</a>
+                    <a href="/Editor">Start now</a>
                 </div>
             </main>
       </>
