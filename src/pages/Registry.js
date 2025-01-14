@@ -12,11 +12,18 @@ function Registry() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (password !== confirmPassword) {
+            setMessage('Passwords do not match.');
+            return;
+        }
+
         try {
         const response = await axios.post('/api/auth/register', { name, email, password });
-        setMessage(response.data.message);
+        setMessage('Registration successful! Please log in.');
         } catch (error) {
-        setMessage(error.response.data.message || 'An error occurred.');
+            const errorMsg = error.response?.data?.message || 'An error occurred.';
+            setMessage(errorMsg);
         }
     };
 
@@ -29,16 +36,16 @@ function Registry() {
                     </div>
                     <h2>Create Your Account</h2>
                     <form onSubmit={handleSubmit}>
-                        <label for="username">Name</label>
+                        <label htmlFor="username">Name</label>
                         <input type="text" id="username" name="username" required placeholder="Enter your username" value={name} onChange={(e) => setName(e.target.value)} />
                         
-                        <label for="email">Email</label>
+                        <label htmlFor="email">Email</label>
                         <input type="email" id="email" name="email" required placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
                         
-                        <label for="password">Password</label>
+                        <label htmlFor="password">Password</label>
                         <input type="password" id="password" name="password" required placeholder="Create a password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         
-                        <label for="confirm-password">Confirm Password</label>
+                        <label htmlFor="confirm-password">Confirm Password</label>
                         <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                         
                         <button type="submit" class="signup-button">Register</button>

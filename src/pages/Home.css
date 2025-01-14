@@ -41,16 +41,29 @@ main .intro, main .howto {
     gap: 2rem;
 }
 
+@media (max-width: 768px) {
+    main .intro, main .howto {
+        flex-direction: column-reverse;
+    }
+}
+
 h2 {
     font-size: var(--font-size-x-large);
 }
 
 main .intro-text, main .howto-text {
-    font-size: var(--font-size-medium);
     color: var(--color-black);
     padding: 1rem 2rem;
     text-align: left;
     flex: 1;
+}
+
+main .intro-text {
+    font-size: var(--font-size-large);
+}
+
+main .howto-text {
+    font-size: var(--font-size-medium);
 }
 
 main .intro .intro-text a {

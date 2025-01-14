@@ -14,17 +14,17 @@ function Login () {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', 
+            const response = await axios.post(
+                'http://localhost:5000/api/auth/login',
                 { email, password },
                 { headers: { 'Content-Type': 'application/json' } }
             );
             setMessage('Login successful');
-            // Handle successful login (e.g., store token, redirect)
             localStorage.setItem('token', response.data.token);
-            // Redirect to the homepage
             navigate('/');
         } catch (error) {
-            setMessage(error.response?.data?.message || 'An error occurred.');
+            const errorMsg = error.response?.data?.message || 'An error occurred.';
+            setMessage(errorMsg);
         }
     };
 
