@@ -14,20 +14,19 @@
 header {
     background-color: var(--color-blue);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     padding: 1rem 2rem;
-    height: 7rem;
+    height: auto;
   }
   
   header .logo-container {
     margin: auto;
+    margin-bottom: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
   }
   
   header .logo-container img {
@@ -35,36 +34,58 @@ header {
     width: auto;
   }
   
+  header .login-link, header nav {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+  
   header .login-link {
-    margin-left: auto;
     border: 0.5rem solid var(--color-white);
     padding: 0.5rem 0.5rem;
   }
   
-  header .login-link a {
-    font-size: var(--font-size-xx-large);
+  header .login-link a, header nav ul li {
+    font-size: var(--font-size-large);
     color: var(--color-white);
     text-decoration: none;
+    margin: 0 0.5rem;
   }
   
-  header .login-link:hover {
+  header .login-link a:hover {
     opacity: 0.8;
   }
 
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+nav ul li {
+    margin: 0 1rem;
+}
+
   @media (max-width: 768px) {
-    header .logo-container {
-      position: unset;
-      transform: none;
-      left: 5%;
+    header .logo-container img {
+      height: 5rem;
+    }
+
+    header .login-link, header nav ul li {
+      font-size: var(--font-size-medium);
     }
   }
 
   @media (max-width: 480px) {
     header .logo-container img {
-      height: 5rem;
+      height: 4rem;
     }
 
-    header .login-link a {
-      font-size: var(--font-size-x-large);
+  header .login-link, header nav ul li {
+      font-size: var(--font-size-small);
     }
   }

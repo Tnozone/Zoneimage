@@ -2,6 +2,7 @@
 import React from 'react';
 import './Home.css'
 import example from '../assets/example-photo.png'
+import exampleInterface from '../assets/editor_interface.png'
 
 const Home = () => {
     return (
@@ -32,10 +33,10 @@ const Home = () => {
                             The image scaling uses the inputs to either height or width.</p>
                     </div>
                     <div className="howto-example">
-                        <img src="placeholder.jpg" alt="editor interface" />
+                        <img src={exampleInterface} alt="editor interface" />
                     </div>
-                    <a href="/Editor">Start now</a>
                 </div>
+                <div className="editor-link"><a href="/Editor">Start now</a></div>
             </main>
       </>
     );

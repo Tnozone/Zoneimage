@@ -1,14 +1,14 @@
 import './Editor.css';
 import React, { useState } from 'react';
 import { removeBackground } from '@imgly/background-removal';
-import { fillTransparency } from '../fillTransparency';
-import { invertColors } from '../utils/InvertColors';
-import { convertToBlackAndWhite } from '../utils/BlackAndWhite';
-import { adjustSaturation } from '../utils/AdjustSaturation';
-import { autoCrop as performAutoCrop } from '../utils/AutoCrop';
-import { ManualCrop } from '../ManualCrop';
-import { setCropping } from '../utils/setCropping';
-import { scaleImage } from '../utils/scaleImage';
+import { fillTransparency } from '../fillTransparency.js';
+import { invertColors } from '../utils/InvertColors.js';
+import { convertToBlackAndWhite } from '../utils/BlackAndWhite.js';
+import { adjustSaturation } from '../utils/AdjustSaturation.js';
+import { autoCrop as performAutoCrop } from '../utils/AutoCrop.js';
+import { ManualCrop } from '../ManualCrop.js';
+import { setCropping } from '../utils/setCropping.js';
+import { scaleImage } from '../utils/scaleImage.js';
 
 function Editor() {
     const [image, setImage] = useState(null); // Original image
@@ -27,6 +27,7 @@ function Editor() {
     const [scalingEnabled, setScalingEnabled] = useState(false);
     const [scaleHeight, setScaleHeight] = useState('');
     const [scaleWidth, setScaleWidth] = useState('');
+    const [errorNotification, setErrorNotification] = useState('');
   
     const fillThreshold = 150; // Fixed fill threshold for less aggressive filling (no need for dynamic state)
   
@@ -154,7 +155,11 @@ function Editor() {
             if (cropEnabled) {
               if (autoCrop) {
                 console.log('Performing auto-crop...');
-                finalUrl = await performAutoCrop(finalUrl);
+                const croppedImageUrl = await performAutoCrop(finalUrl);
+                if (croppedImageUrl === finalUrl) {
+                  setErrorNotification('No face detected. The image was not cropped.');
+                }
+                finalUrl = croppedImageUrl;
               } else {
                 console.log('Performing  manual crop...');
                 finalUrl = await setCropping(finalUrl, croppedAreaPixels);
@@ -247,7 +252,7 @@ function Editor() {
                 checked={saturate}
                 onChange={handleSaturateChange}
               />
-              Saturate Image
+              Saturate
             </label>
   
             {/* Desaturate Checkbox */}
@@ -257,7 +262,7 @@ function Editor() {
                 checked={desaturate}
                 onChange={handleDesaturateChange}
               />
-              Desaturate Image
+              Desaturate
             </label>
   
             {/* Monochrome Checkbox */}
@@ -279,25 +284,28 @@ function Editor() {
                 checked={cropEnabled}
                 onChange={(e) => setCropEnabled(e.target.checked)}
               />
-              Enable Cropping
+              Crop
             </label>
   
             {cropEnabled && (
               <div className='radioswitch'>
-                <input
-                    type="radio"
-                    id="auto-crop"
-                    checked={autoCrop}
-                    onChange={() => setAutoCrop(true)}
-                  />
-                <label htmlFor="auto-crop">Auto-Crop</label>
-                <input
-                    type="radio"
-                    id="manual-crop"
-                    checked={!autoCrop}
-                    onChange={() => setAutoCrop(false)}
-                  />
-                <label htmlFor="manual-crop">Manual Crop</label>
+                <div className='radio-container'>
+                  <input
+                      type="radio"
+                      id="auto-crop"
+                      checked={autoCrop}
+                      onChange={() => setAutoCrop(true)}
+                    />
+                  <label htmlFor="auto-crop">Auto-Crop</label>
+                  <input
+                      type="radio"
+                      id="manual-crop"
+                      checked={!autoCrop}
+                      onChange={() => setAutoCrop(false)}
+                    />
+                  <label htmlFor="manual-crop">Manual Crop</label>
+                </div>
+                {errorNotification && <div className="notification">{errorNotification}</div>}
               </div>
             )}
   
@@ -318,7 +326,7 @@ function Editor() {
                 checked={scalingEnabled}
                 onChange={(e) => setScalingEnabled(e.target.checked)}
               />
-              Enable Scaling
+              Scale
             </label>
             {scalingEnabled && (
               <div className='scaling-labels'>

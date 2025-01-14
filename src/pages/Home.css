@@ -66,7 +66,7 @@ main .howto-text {
     font-size: var(--font-size-medium);
 }
 
-main .intro .intro-text a {
+main .intro .intro-text a, .editor-link a {
     font-size: var(--font-size-x-large);
 }
 
@@ -74,4 +74,16 @@ main .intro .intro-text a {
     width: 50rem;
     height: auto;
     padding: 1rem 2rem;
+}
+
+.editor-link {
+    background-color: var(--color-white);
+    text-align: center;
+    padding: 1rem 2rem;
+}
+
+@media (max-width: 768px) {
+    .example-img img, .howto-example img {
+      width: 30rem;
+    }
 }

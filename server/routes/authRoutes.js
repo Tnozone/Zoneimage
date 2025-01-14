@@ -23,4 +23,14 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).send({ message: 'Logout failed' });
+        }
+        res.clearCookie('connect.sid');
+        res.send({ message: 'Logout successful' });
+    });
+});
+
 export default router;

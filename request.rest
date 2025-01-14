@@ -20,3 +20,7 @@ Content-Type: application/json
     "email": "example@gamil.com",
     "password": "password"
 }
+
+###
+
+POST http://localhost:5000/api/auth/logout

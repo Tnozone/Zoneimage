@@ -26,7 +26,9 @@ export const autoCrop = async (imageSrc) => {
           // Detect the face and landmarks
           const detections = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
           if (!detections) {
-            throw new Error('No face detected.');
+            console.warn('No face detected.');
+            resolve(imageSrc);
+            return;
           }
 
           // Get face bounding box
