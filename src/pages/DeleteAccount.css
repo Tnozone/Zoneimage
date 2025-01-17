@@ -1,0 +1,84 @@
+/* Delete Account Container */
+.delete-account-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Delete Account Card */
+  .delete-account-card {
+    background-color: var(--color-white);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  /* Logo Styling */
+  .brand-logo img {
+    width: 200px;
+    margin-bottom: 20px;
+  }
+  
+  /* Form Fields */
+  .delete-account-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .delete-account-card label {
+    text-align: left;
+    font-size: var(--font-size-medium);
+  }
+  
+  input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  /* Delete Account Button */
+  .delete-account-button {
+    padding: 10px;
+    background-color: var(--color-red); /* Use a red color for delete */
+    color: var(--color-white);
+    font-size: var(--font-size-medium);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .delete-account-button:hover {
+    background-color: var(--color-dark-red);
+  }
+  
+  /* Confirmation Message */
+  .confirmation-message {
+    font-size: 1.1rem;
+    margin-top: 20px;
+    color: #333;
+  }
+  
+  /* Other Options */
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+  
+  .cancel-link {
+    color: var(--color-gray);
+    text-decoration: none;
+    font-size: var(--font-size-small);
+  }
+  
+  .cancel-link:hover {
+    text-decoration: underline;
+  }

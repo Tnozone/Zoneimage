@@ -16,8 +16,8 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const { token, userId } = await loginUser(email, password);
-        res.status(200).send({ token, userId });
+        const { token, userId, username } = await loginUser(email, password);
+        res.status(200).send({ token, userId, username });
     } catch (error) {
         res.status(400).send({ error: error.message });
     }
@@ -31,6 +31,19 @@ router.post('/logout', (req, res) => {
         res.clearCookie('connect.sid');
         res.send({ message: 'Logout successful' });
     });
+});
+
+router.post('/save', async (req, res) => {
+    const { imageUrl } = req.body;
+    const db = await getDb();
+    const savedImages = db.collection('savedImages');
+
+    try {
+        const result = await savedImages.insertOne({ imageUrl, createdAt: new Date() });
+        res.status(201).send({ message: 'Image saved successfully', imageId: result.insertedId });
+    } catch (error) {
+        res.status(500).send({ message: 'Failed to save image', error });
+    }
 });
 
 export default router;

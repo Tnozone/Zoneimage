@@ -22,12 +22,13 @@ export const autoCrop = async (imageSrc) => {
           // Load face-api models (ensure these are downloaded and available)
           await faceapi.nets.tinyFaceDetector.loadFromUri('/models'); // Use tinyFaceDetector model
           await faceapi.nets.faceRecognitionNet.loadFromUri('/models'); // Use faceRecognitionNet model
+          await faceapi.nets.faceLandmark68Net.loadFromUri('/models'); // Load the FaceLandmark68Net model
 
           // Detect the face and landmarks
           const detections = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
           if (!detections) {
             console.warn('No face detected.');
-            resolve(imageSrc);
+            resolve(imageSrc); // Return the original image if no face is detected
             return;
           }
 

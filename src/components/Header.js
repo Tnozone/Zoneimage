@@ -5,8 +5,9 @@ import logo from '../assets/Zoneimages-logo.png';
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
+  const checkLoginState = () => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
@@ -14,7 +15,23 @@ const Header = () => {
       if (storedUsername) {
         setUsername(storedUsername);
       }
+    } else {
+      setIsLoggedIn(false);
+      setUsername('');
     }
+  };
+
+  useEffect(() => {
+    // Check login state on component mount
+    checkLoginState();
+
+    // Optional: Listen to localStorage changes to update login state
+    window.addEventListener('storage', checkLoginState);
+
+    // Cleanup the event listener
+    return () => {
+      window.removeEventListener('storage', checkLoginState);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -27,6 +44,10 @@ const Header = () => {
     setUsername('');
   };
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
     <header>
       <div className="logo-container">
@@ -34,16 +55,24 @@ const Header = () => {
       </div>
       {isLoggedIn ? (
         <nav>
-          <ul>
+          <div className="hamburger" onClick={toggleMenu}>
+            <div className="line"></div>
+            <div className="line"></div>
+            <div className="line"></div>
+          </div>
+          <ul className={menuOpen ? 'show' : ''}>
             <li>Welcome, {username}</li>
+            <li><a href="/Editor">Edit</a></li>
             <li><a href="/Gallery">Gallery</a></li>
             <li>
               <a href="#" onClick={() => handleLogout(setIsLoggedIn, setUsername)}>Logout</a>
             </li>
+            <li><a href="/DeleteAccount">Unsubscribe</a></li>
           </ul>
         </nav>
       ) : (
         <div className="login-link">
+          <a href="/Editor">Edit</a>
           <a href="/Login">LOG IN</a>
           <a href="/Registry">Register</a>
         </div>

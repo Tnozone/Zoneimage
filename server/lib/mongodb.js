@@ -34,7 +34,7 @@ let db;
 export async function getDb() {
     if (!db) {
         const connectedClient = await clientPromise;
-        db = connectedClient.db('yourDatabaseName'); // Replace with your actual DB name
+        db = connectedClient.db('yourDatabaseName');
     }
     return db;
 }

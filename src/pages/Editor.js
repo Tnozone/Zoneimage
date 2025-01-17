@@ -1,5 +1,6 @@
 import './Editor.css';
 import React, { useState } from 'react';
+import axios from 'axios';
 import { removeBackground } from '@imgly/background-removal';
 import { fillTransparency } from '../fillTransparency.js';
 import { invertColors } from '../utils/InvertColors.js';
@@ -15,21 +16,24 @@ function Editor() {
     const [fileName, setFileName] = useState("Upload Image"); // file name
     const [processedImage, setProcessedImage] = useState(null); // Processed image
     const [backgroundRemoval, setBackgroundRemoval] = useState(false); // Checkbox state for background removal
-    const [colorFill, setColorFill] = useState("#ffffff"); // Color for filling transparent parts
+    const [colorFill, setColorFill] = useState("#ffffff"); // Color for filling transparent background
     const [invert, setInvert] = useState(false); // Checkbox state for color inversion
-    const [blackAndWhite, setBlackAndWhite] = useState(false); // Checkbox state for color inversion
+    const [blackAndWhite, setBlackAndWhite] = useState(false); // Checkbox state for black and white
     const [keepTransparent, setKeepTransparent] = useState(false); // Checkbox state for keeping transparency
     const [saturate, setSaturate] = useState(false); // Checkbox state for saturation
     const [desaturate, setDesaturate] = useState(false); // Checkbox state for desaturation
     const [cropEnabled, setCropEnabled] = useState(false); // Checkbox state for cropping
     const [autoCrop, setAutoCrop] = useState(true); // Auto-crop vs manual crop mode
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-    const [scalingEnabled, setScalingEnabled] = useState(false);
+    const [scalingEnabled, setScalingEnabled] = useState(false); // Checkbox state for saling
     const [scaleHeight, setScaleHeight] = useState('');
     const [scaleWidth, setScaleWidth] = useState('');
     const [errorNotification, setErrorNotification] = useState('');
+
+    const [progress, setProgress] = useState(0);
+    const [showProgressBar, setShowProgressBar] = useState(false);
   
-    const fillThreshold = 150; // Fixed fill threshold for less aggressive filling (no need for dynamic state)
+    const fillThreshold = 150; // Fixed fill threshold for less aggressive filling
   
     // Handle image upload
     const handleImageUpload = (event) => {
@@ -46,6 +50,21 @@ function Editor() {
         reader.readAsDataURL(file);
       }
     };
+
+    const handleSaveImage = async () => {
+      try {
+          const token = localStorage.getItem('token');
+          const response = await axios.post(
+              'http://localhost:5000/api/images/save',
+              { imageUrl: processedImage },
+              { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
+          );
+          alert('Image saved successfully!');
+      } catch (error) {
+          console.error('Error saving image:', error);
+          alert('Failed to save the image.');
+      }
+    }; 
   
     // Handle checkbox toggle for background removal
     const handleBackgroundRemovalChange = () => {
@@ -86,11 +105,16 @@ function Editor() {
     // Handle Generate button click
     const handleGenerate = async () => {
       if (image) {
+
+        setShowProgressBar(true); // Show the progress bar
+        setProgress(0); // Reset progress
+
         try {
           let processedBlob;
   
           // Step 1: Background removal
           if (backgroundRemoval) {
+            setProgress(20);
             // If background removal is checked, process the image
             const base64ImageData = image.split(',')[1]; // Extract Base64 part from the data URL
             const byteArray = Uint8Array.from(atob(base64ImageData), (c) => c.charCodeAt(0)); // Convert to byte array
@@ -109,6 +133,7 @@ function Editor() {
           if (!processedBlob) {
             throw new Error('Background removal failed, received invalid Blob.');
           }
+          setProgress(30);
   
           // Create an image object from the processed Blob
           const img = new Image();
@@ -131,6 +156,7 @@ function Editor() {
               const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
               fillTransparency(ctx, imageData, colorFill, fillThreshold);
             }
+            setProgress(40);
   
             // Convert the canvas back to a Blob and create a URL for the processed image
             const finalBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
@@ -140,16 +166,19 @@ function Editor() {
             if (invert) {
               finalUrl = await invertColors(finalUrl); // Apply color inversion
             }
+            setProgress(50);
   
             // Step 4: Adjust saturation/desaturation
             if (saturate || desaturate) {
               finalUrl = await adjustSaturation(finalUrl, saturate);
             }
+            setProgress(60);
   
             // Step 5: Make black and white if the checkbox is checked
             if (blackAndWhite) {
               finalUrl = await convertToBlackAndWhite(finalUrl); // Apply black and wite
             }
+            setProgress(80);
   
             // Step 7: Cropping
             if (cropEnabled) {
@@ -165,16 +194,20 @@ function Editor() {
                 finalUrl = await setCropping(finalUrl, croppedAreaPixels);
               }
             }
+            setProgress(90);
   
             // Step 8: Scaling
             if (scalingEnabled && (scaleWidth || scaleHeight)) {
               finalUrl = await scaleImage(finalUrl, scaleWidth, scaleHeight);
             }
+            setProgress(100);
   
             setProcessedImage(finalUrl);
           };
         } catch (error) {
           console.error('Error during processing:', error);
+        } finally {
+          setTimeout(() => setShowProgressBar(false), 1000); // Hide after 1s delay for smooth transition
         }
       } else {
         alert('Please upload an image first.');
@@ -353,12 +386,19 @@ function Editor() {
           </div>
   
           <button className="generate" onClick={handleGenerate}>Generate</button>
+
+          {showProgressBar && (
+            <div className="progress-bar-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+            </div>
+          )}
   
           <div className='result' style={{ marginTop: '20px' }}>
             {processedImage && (
               <div>
                 <h3>Processed Image:</h3>
                 <img src={processedImage} alt="Processed" style={{ maxWidth: '100%' }} />
+                <button onClick={handleSaveImage}>Save Image</button>
               </div>
             )}
           </div>

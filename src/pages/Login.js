@@ -21,6 +21,7 @@ function Login () {
             );
             setMessage('Login successful');
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('username', response.data.username);
             navigate('/');
         } catch (error) {
             const errorMsg = error.response?.data?.message || 'An error occurred.';

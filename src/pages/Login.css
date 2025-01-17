@@ -77,7 +77,7 @@ input {
 .login-button {
   padding: 10px;
   background-color: var(--color-blue);
-  color: white;
+  color: var(--color-white);
   font-size: var(--font-size-medium);
   border: none;
   border-radius: 5px;

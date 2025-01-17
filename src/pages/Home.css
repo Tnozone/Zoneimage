@@ -41,12 +41,6 @@ main .intro, main .howto {
     gap: 2rem;
 }
 
-@media (max-width: 768px) {
-    main .intro, main .howto {
-        flex-direction: column-reverse;
-    }
-}
-
 h2 {
     font-size: var(--font-size-x-large);
 }
@@ -70,6 +64,11 @@ main .intro .intro-text a, .editor-link a {
     font-size: var(--font-size-x-large);
 }
 
+.example-img, .howto-example {
+    display: flex;
+    justify-content: center;
+}
+
 .example-img img, .howto-example img {
     width: 50rem;
     height: auto;
@@ -83,7 +82,15 @@ main .intro .intro-text a, .editor-link a {
 }
 
 @media (max-width: 768px) {
+    main .intro, main .howto {
+        flex-direction: column-reverse;
+    }
+
+    .example-img, .howto-example {
+        padding: 0.5rem;
+    }
+
     .example-img img, .howto-example img {
-      width: 30rem;
+        max-width: 100%;
     }
 }
