@@ -33,17 +33,4 @@ router.post('/logout', (req, res) => {
     });
 });
 
-router.post('/save', async (req, res) => {
-    const { imageUrl } = req.body;
-    const db = await getDb();
-    const savedImages = db.collection('savedImages');
-
-    try {
-        const result = await savedImages.insertOne({ imageUrl, createdAt: new Date() });
-        res.status(201).send({ message: 'Image saved successfully', imageId: result.insertedId });
-    } catch (error) {
-        res.status(500).send({ message: 'Failed to save image', error });
-    }
-});
-
 export default router;

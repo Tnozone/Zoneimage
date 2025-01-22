@@ -59,12 +59,13 @@ function Editor() {
               { imageUrl: processedImage },
               { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
           );
+          console.log('Server response:', response.data);
           alert('Image saved successfully!');
       } catch (error) {
           console.error('Error saving image:', error);
           alert('Failed to save the image.');
       }
-    }; 
+  }; 
   
     // Handle checkbox toggle for background removal
     const handleBackgroundRemovalChange = () => {

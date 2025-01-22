@@ -1,7 +1,20 @@
 .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    padding: 16px;
     background-color: var(--color-white);
-    padding: 1rem 2rem;
+    border-radius: 10px;
+}
+
+.gallery-item img {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gallery p {
+    font-size: var(--font-size-medium);
+    color: var(--color--black);
 }

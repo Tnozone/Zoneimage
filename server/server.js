@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import clientPromise from './lib/mongodb.js';
 import userRoutes from './routes/userRoutes.js';
+import imageRoutes from './routes/imageRoutes.js';
 
 dotenv.config();
 
@@ -17,6 +18,12 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/images', imageRoutes);
+
+app.use((req, res, next) => {
+    console.log(`Incoming request: ${req.method} ${req.url}`);
+    next();
+});
 
 // Database connection test
 clientPromise.then(() => {
