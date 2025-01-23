@@ -8,7 +8,7 @@
   
   /* Delete Account Card */
   .delete-account-card {
-    background-color: var(--color-white);
+    background-color: var(--page-color);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

@@ -44,7 +44,7 @@ body {
 .editor {
   border: 1px solid var(--color-dark-grey);
   border-radius: 25px;
-  background-color: #fff;
+  background-color: var(--page-color);
   font-size: var(--font-size-medium);
   text-align: center;
   display: flex;
@@ -56,6 +56,7 @@ body {
 h1 {
   font-size: var(--font-size-xx-large);
   text-align: center;
+  color: var(--text-color);
 }
 
 .cropper-preview {
@@ -108,6 +109,7 @@ h1 {
   gap: 1rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  color: var(--text-color);
 }
 
 .editor label {
@@ -115,6 +117,7 @@ h1 {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  color: var(--text-color);
 }
 
 .editor input[type="checkbox"] {
@@ -198,6 +201,7 @@ input[type="number"] {
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: var(--color-black);
 }
 
 .radioswitch input[type="radio"]:checked + label {
@@ -250,7 +254,7 @@ input[type="file"] {
   display: none;
 }
 
-.upload-button {
+.editor .upload-button {
   display: inline-block;
   padding: 10px 20px;
   font-size: 16px;

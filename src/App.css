@@ -22,6 +22,18 @@ html {
 
   --switch-color-primary: var(--color-red);
   --switch-color-secondary: var(--color-dark-red);
+
+  --header-color: var(--color-blue);
+  --bg-color: var(--color-light-blue);
+  --page-color: var(--color-white);
+  --text-color: var(--color-black);
+}
+
+[data-theme="dark"] {
+  --header-color: var(--color-dark-red);
+  --bg-color: var(--color-black);
+  --page-color: var(--color-black);
+  --text-color: var(--color-white);
 }
 
 body {
@@ -30,10 +42,6 @@ body {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     height: 100%;
 } 
-
-.App {
-  text-align: center;
-}
 
 a:hover {
   cursor: pointer;

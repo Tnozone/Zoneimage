@@ -9,16 +9,98 @@
     --font-size-large: 1.8rem;
     --font-size-x-large: 2.3rem;
     --font-size-xx-large: 4.8rem;
+
+    --bar-height: 1rem;
+    --bar-width: 3rem;
+    --hamburger-gap: 0.6rem;
+    --hamburger-margin: 5px;
+    --animation-timing: 200ms ease-in-out;
+    --hamburger-height: calc(var(--bar-height) * 3 + var(--hamburger-gap) * 2);
   }
 
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+.hamburger-menu {
+  --x-width: calc(var(--hamburger-height) * 1.41421356237);
+
+  display: none;
+  flex-direction: column;
+  gap: var(--hamburger-gap);
+  width: max-content;
+  position: absolute;
+  top: var(--hamburger-margin);
+  left: var(--hamburger-margin);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.hamburger-menu::before,
+.hamburger-menu::after,
+.hamburger-menu input {
+  content: "";
+  width: var(--bar-width);
+  height: var(--bar-height);
+  background-color: var(--color-white);
+  border-radius: 25px;
+  transform-origin: left center;
+  transition: opacity var(--animation-timing), width var(--animation-timing),
+   rotate var(--animation-timing), translate var(--animation-timing);
+}
+
+.hamburger-menu input {
+  appearance: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  pointer-events: none;
+}
+
+.hamburger-menu:has(input:checked)::before {
+  rotate: 45deg;
+  width: var(--x-width);
+  translate: 0 calc(var(--bar-height) / -2);
+}
+
+.hamburger-menu:has(input:checked)::after {
+  rotate: -45deg;
+  width: var(--x-width);
+  translate: 0 calc(var(--bar-height) / 2);
+}
+
+.hamburger-menu:checked {
+  opacity: 0;
+  width: 0;
+}
+
 header {
-    background-color: var(--color-blue);
+    background-color: var(--header-color);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1rem;
     height: auto;
+  }
+
+  header .user-toggles {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+  }
+
+  header .user-toggles img {
+    height: 1.5rem;
+    width: auto;
+  }
+
+  header .header-container {
+    display: flex;
+    flex-direction: column;
   }
   
   header .logo-container {
@@ -71,31 +153,42 @@ nav ul li {
     margin: 0 1rem;
 }
 
-.hamburger {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  justify-content: space-around;
-  align-items: center;
-  left: 2rem;
-  position: absolute;
-  transform: translateY(-50%);
-  margin-top: 2rem;
-}
-
-.hamburger .line {
-  width: 100%;
-  height: 3px;
-  background-color: var(--color-white);
-  border-radius: 5px;
-}
-
   @media (max-width: 768px) {
+    .hamburger-menu {
+      display: flex;
+    }
+
+    header nav {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    /* Hide nav items by default */
+    .nav-items {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      gap: 1rem; /* Adds space between items */
+      padding: 0;
+      margin-top: 1rem; /* Space between hamburger and nav items */
+    }
+  
+    .nav-items li {
+      margin: 0;
+    }
+  
+    /* Show nav items when the hamburger is checked */
+    .hamburger-menu input:checked ~ .nav-items {
+      display: flex;
+    }
+
     header {
       flex-direction: row-reverse;
       align-items: flex-start;
+    }
+
+    header .user-toggles {
+      justify-content: center;
     }
   
     header .logo-container {
@@ -110,28 +203,6 @@ nav ul li {
     header .login-link, header nav ul li {
       font-size: var(--font-size-medium);
     }
-
-    .hamburger {
-      display: flex;
-    }
-
-    nav ul {
-        display: none;
-        flex-direction: column;
-        justify-content: none;
-        padding-top: 3.5rem;
-        left: 1rem;
-        transition: all 0.3s ease-in-out;
-    }
-
-    nav ul.show {
-      display: flex;
-    }
-
-    nav ul li {
-      text-align: left;
-      padding: 0.5rem;
-    }
   }
 
   @media (max-width: 480px) {
@@ -139,7 +210,7 @@ nav ul li {
       height: 4rem;
     }
 
-  header .login-link, header nav ul li {
+    header .login-link, header nav ul li {
       font-size: var(--font-size-small);
     }
   }

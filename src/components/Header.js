@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './Header.css';
+import '../App.css';
 import logo from '../assets/Zoneimages-logo.png';
+import eyeBlack from '../assets/eye-icon-black.png';
+import eyeWhite from '../assets/eye-icon-white.png';
+import { toggleTheme, loadSavedTheme } from '../utils/darkMode.js';
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState(eyeBlack);
 
   const checkLoginState = () => {
     const token = localStorage.getItem('token');
@@ -44,23 +48,29 @@ const Header = () => {
     setUsername('');
   };
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  const handleToggle = () => {
+    toggleTheme();
+    setCurrentImage((prevImage) => (prevImage === eyeBlack ? eyeWhite : eyeBlack)); // Switch image
   };
+
+  useEffect(() => {
+    loadSavedTheme();
+  }, []);
 
   return (
     <header>
+      <div className='user-toggles'>
+        <img src={currentImage} alt="theme-toggle icon" id="theme-toggle" onClick={handleToggle} />
+      </div>
       <div className="logo-container">
         <a href="/"><img src={logo} alt="Logo" /></a>
       </div>
       {isLoggedIn ? (
         <nav>
-          <div className="hamburger" onClick={toggleMenu}>
-            <div className="line"></div>
-            <div className="line"></div>
-            <div className="line"></div>
-          </div>
-          <ul className={menuOpen ? 'show' : ''}>
+          <label className='hamburger-menu'>
+            <input type="checkbox"></input>
+          </label>
+          <ul className='nav-items'>
             <li>Welcome, {username}</li>
             <li><a href="/Editor">Edit</a></li>
             <li><a href="/Gallery">Gallery</a></li>
