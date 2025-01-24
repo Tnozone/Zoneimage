@@ -13,6 +13,7 @@ An image editor application where you can crop, scale, remove backgrounds, and m
 
 ### Databases
 * Mongodb Atlas
+* Google Cloud Storage
 
 ### Third Parties
 * [face-api.js](https://github.com/justadudewhohacks/face-api.js/)
