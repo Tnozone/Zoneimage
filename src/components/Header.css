@@ -11,7 +11,7 @@
     --font-size-xx-large: 4.8rem;
 
     --bar-height: 1rem;
-    --bar-width: 3rem;
+    --bar-width: 5rem;
     --hamburger-gap: 0.6rem;
     --hamburger-margin: 5px;
     --animation-timing: 200ms ease-in-out;
@@ -71,7 +71,7 @@
   translate: 0 calc(var(--bar-height) / 2);
 }
 
-.hamburger-menu:checked {
+.hamburger-menu:has(input:checked) input {
   opacity: 0;
   width: 0;
 }
@@ -161,6 +161,7 @@ nav ul li {
     header nav {
       flex-direction: column;
       align-items: flex-start;
+      position: relative;
     }
   
     /* Hide nav items by default */
@@ -170,7 +171,7 @@ nav ul li {
       width: 100%;
       gap: 1rem; /* Adds space between items */
       padding: 0;
-      margin-top: 1rem; /* Space between hamburger and nav items */
+      margin-top: 6rem; /* Space between hamburger and nav items */
     }
   
     .nav-items li {
@@ -178,7 +179,7 @@ nav ul li {
     }
   
     /* Show nav items when the hamburger is checked */
-    .hamburger-menu input:checked ~ .nav-items {
+    nav:has(.hamburger-menu input:checked) .nav-items {
       display: flex;
     }
 

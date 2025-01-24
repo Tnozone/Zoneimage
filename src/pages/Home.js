@@ -28,7 +28,7 @@ const Home = () => {
                             <li>Done! Your modified image is there to download.</li>
                         </ol>
                         <p><b>Note:</b> The new background color defaults to white.<br/>
-                            The automatic cropping option is for portraits and will center in on the face in the photo.<br/>
+                            The automatic cropping option is for portraits and will center in on the face in the photo. If the image has no face detected, it will remain uncropped.<br/>
                             When using the manual cropping option, you can change the height-to-width ratio with the number inputs and zoom in with your scroll wheel.<br/>
                             The image scaling uses the inputs to either height or width.</p>
                     </div>

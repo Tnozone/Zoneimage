@@ -162,26 +162,8 @@ function Editor() {
             // Convert the canvas back to a Blob and create a URL for the processed image
             const finalBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
             let finalUrl = URL.createObjectURL(finalBlob);
-  
-            // Step 3: Invert colors if the checkbox is checked
-            if (invert) {
-              finalUrl = await invertColors(finalUrl); // Apply color inversion
-            }
-            setProgress(50);
-  
-            // Step 4: Adjust saturation/desaturation
-            if (saturate || desaturate) {
-              finalUrl = await adjustSaturation(finalUrl, saturate);
-            }
-            setProgress(60);
-  
-            // Step 5: Make black and white if the checkbox is checked
-            if (blackAndWhite) {
-              finalUrl = await convertToBlackAndWhite(finalUrl); // Apply black and wite
-            }
-            setProgress(80);
-  
-            // Step 7: Cropping
+
+            // Step 3: Cropping
             if (cropEnabled) {
               if (autoCrop) {
                 console.log('Performing auto-crop...');
@@ -194,6 +176,24 @@ function Editor() {
                 console.log('Performing  manual crop...');
                 finalUrl = await setCropping(finalUrl, croppedAreaPixels);
               }
+            }
+            setProgress(50);
+  
+            // Step 4: Invert colors if the checkbox is checked
+            if (invert) {
+              finalUrl = await invertColors(finalUrl); // Apply color inversion
+            }
+            setProgress(60);
+  
+            // Step 5: Adjust saturation/desaturation
+            if (saturate || desaturate) {
+              finalUrl = await adjustSaturation(finalUrl, saturate);
+            }
+            setProgress(80);
+  
+            // Step 6: Make black and white if the checkbox is checked
+            if (blackAndWhite) {
+              finalUrl = await convertToBlackAndWhite(finalUrl); // Apply black and wite
             }
             setProgress(90);
   
