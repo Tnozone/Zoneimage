@@ -1,76 +1,71 @@
-import { Storage } from '@google-cloud/storage';
 import express from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { saveImage } from '../services/savedImages.js';
+import { authenticate } from '../middleware/authenticate.js';
 import { getDb } from '../lib/mongodb.js';
 
 const router = express.Router();
 
-// Instantiate Google Cloud Storage
-const storage = new Storage({
-    keyFilename: './cloudkey.json',
-});
-const bucketName = 'zoneimages_saved';
-const bucket = storage.bucket(bucketName);
+router.use(authenticate);
 
 router.post('/save', async (req, res) => {
-    const { imageUrl } = req.body;
+  const { imageUrl } = req.body;
 
-    if (!imageUrl) {
+  // Assuming `req.user.id` is populated by middleware (e.g., from a JWT token or session)
+  const userId = req.user?.id;
+
+  if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized: User ID is required' });
+  }
+
+  if (!imageUrl) {
       return res.status(400).json({ message: 'Image URL (base64) is required' });
-    }
-  
-    try {
-      // Generate a unique file name
-      const filename = `images/${uuidv4()}.jpg`;
-  
-      // Upload the image to the bucket
-      const file = bucket.file(filename);
-      const buffer = Buffer.from(imageUrl, 'base64');
-  
-      await file.save(buffer, {
-        metadata: { contentType: 'image/jpeg' },
+  }
+
+  try {
+      // Call the service to handle the image saving
+      const { publicUrl, imageId } = await saveImage(imageUrl, userId);
+
+      res.status(201).send({
+          message: 'Image saved successfully',
+          imageId,
+          publicUrl,
       });
-  
-      // Get the public URL
-      const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
-  
-      // Save the public URL to the database
-      const db = await getDb();
-      const savedImages = db.collection('savedImages');
-      const result = await savedImages.insertOne({ imageUrl: publicUrl, createdAt: new Date() });
-  
-      res.status(201).send({ message: 'Image saved successfully', imageId: result.insertedId, publicUrl });
-    } catch (error) {
-      console.error(`[Error] Failed to save image. Details:`, {
-        message: error.message,
-        stack: error.stack,
-        bucketError: error.bucketError || null,
-      });
-      res.status(500).json({ message: 'Failed to save image', error: error.message });
-    }
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
 });
 
 router.get('/images', async (req, res) => {
-    console.log('Handling GET /api/images');
+  console.log('Handling GET /api/images');
 
-    try {
-        // Get the list of files in the bucket
-        const [files] = await storage.bucket(bucketName).getFiles();
+  // Assuming `req.user.id` is populated by authentication middleware
+  const userId = req.user?.id;
 
-        // Map the file names to their public URLs
-        const imageUrls = files.map(file => {
-            return `https://storage.googleapis.com/${bucketName}/${file.name}`;
-        });
-        console.log("Fetched images:", imageUrls);
+  if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized: User ID is required' });
+  }
 
-        res.status(200).json({ images: imageUrls });
-    } catch (error) {
-        console.error(`[Error] Failed to fetch images from bucket. Details:`, {
-            message: error.message,
-            stack: error.stack,
-        });
-        res.status(500).json({ message: 'Failed to fetch images', error: error.message });
-    }
+  try {
+      // Get MongoDB connection and query the images collection
+      const db = await getDb();
+      const savedImages = db.collection('savedImages');
+
+      // Find images where `userId` matches the logged-in user
+      const images = await savedImages.find({ userId }).toArray();
+
+      // Extract public URLs from the images
+      const imageUrls = images.map(image => image.imageUrl);
+
+      console.log("Fetched images for user:", userId, imageUrls);
+
+      res.status(200).json({ images: imageUrls });
+  } catch (error) {
+      console.error(`[Error] Failed to fetch images for user ${userId}. Details:`, {
+          message: error.message,
+          stack: error.stack,
+      });
+      res.status(500).json({ message: 'Failed to fetch images', error: error.message });
+  }
 });
 
 export default router;

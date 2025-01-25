@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
-import userController from '../controllers/userController.js';
+import { deleteUser } from '../controllers/userController.js';
 
 const router = express.Router();
 
@@ -18,19 +18,18 @@ async function authenticateUser(req, res, next) {
             return res.status(400).json({ message: 'Invalid password' });
         }
 
-        req.user = user; // Attach the user to the request for the next handler
+        req.user = user;
         next();
     } catch (error) {
-        next(error); // Pass the error to the next middleware for centralized error handling
+        next(error);
     }
 }
   
-  // Update the delete route to use the middleware
-  router.delete('/users/:id', authenticateUser, async (req, res) => {
+router.delete('/users/:id', authenticateUser, async (req, res) => {
     if (req.user._id.toString() !== req.params.id) {
         return res.status(403).json({ message: 'You can only delete your own account' });
     }
-    await userController.deleteUser(req, res);
+    await deleteUser(req, res);
 });
 
 export default router;
