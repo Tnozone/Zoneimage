@@ -1,3 +1,4 @@
+// Function to adjust the saturation of an image
 export const adjustSaturation = (imageSrc, increaseSaturation = true) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -16,7 +17,7 @@ export const adjustSaturation = (imageSrc, increaseSaturation = true) => {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
   
-        // Adjust saturation
+        // Adjust saturation by iterating through each pixel
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
           const g = data[i + 1];
@@ -52,11 +53,13 @@ export const adjustSaturation = (imageSrc, increaseSaturation = true) => {
             }
           }
   
+          // Update pixel data with adjusted RGB values
           data[i] = newR;
           data[i + 1] = newG;
           data[i + 2] = newB;
         }
   
+        // Apply the updated pixel data back to the canvas
         ctx.putImageData(imageData, 0, 0);
         resolve(canvas.toDataURL('image/jpeg'));
       };

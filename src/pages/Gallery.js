@@ -3,20 +3,20 @@ import axios from 'axios';
 import './Gallery.css';
 
 const Gallery = () => {
-    const [images, setImages] = useState([]); // State to store image URLs
-    const [loading, setLoading] = useState(true); // Loading state
+    const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Fetch image data from the API
         const fetchImages = async () => {
             try {
                 const response = await axios.get('http://localhost:5000/api/images');
-                const imageUrls = response.data.images; // Ensure this matches the backend response structure
-                setImages(imageUrls); // Correct function name
+                const imageUrls = response.data.images;
+                setImages(imageUrls);
             } catch (error) {
                 console.error('Error fetching images:', error);
             } finally {
-                setLoading(false); // Stop loading
+                setLoading(false);
             }
         };
 
@@ -24,7 +24,7 @@ const Gallery = () => {
     }, []);
 
     if (loading) {
-        return <div className='loading'>Loading images...</div>; // Loading indicator
+        return <div className='loading'>Loading images...</div>;
     }
 
     return (

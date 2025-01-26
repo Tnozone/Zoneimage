@@ -1,5 +1,6 @@
 import * as faceapi from 'face-api.js';
 
+// Function to crop a portrait by centering on the face
 export const autoCrop = async (imageSrc) => {
   return new Promise(async (resolve, reject) => {
     try {

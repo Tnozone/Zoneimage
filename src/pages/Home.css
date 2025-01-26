@@ -62,6 +62,22 @@ main .howto-text {
 
 main .intro .intro-text a, .editor-link a {
     font-size: var(--font-size-x-large);
+    padding: 10px;
+    background-color: var(--color-blue);
+    color: var(--color-white);
+    font-size: var(--font-size-medium);
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+main .intro .intro-text a:hover, .editor-link a:hover {
+    background-color: var(--color-dark-blue);
+}
+
+main .intro .intro-text a::after, .editor-link a::after {
+    color: var(--color-white);
 }
 
 .example-img, .howto-example {

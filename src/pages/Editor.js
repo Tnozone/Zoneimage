@@ -39,6 +39,7 @@ function Editor() {
     const handleImageUpload = (event) => {
       const file = event.target.files[0];
       if (file) {
+        // Truncate the file name if it exceeds 20 characters for better display
         const truncatedName =
           file.name.length > 20 ? file.name.slice(0, 20) + "..." : file.name;
         setFileName(truncatedName);
@@ -51,14 +52,18 @@ function Editor() {
       }
     };
 
+    // Function to save the processed image to the server
     const handleSaveImage = async () => {
       try {
+        // Retrieve the authentication token from localStorage
           const token = localStorage.getItem('token');
+          // Make a POST request to the server to save the image
           const response = await axios.post(
               'http://localhost:5000/api/images/save',
               { imageUrl: processedImage },
               { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
           );
+          // Log the server response for debugging
           console.log('Server response:', response.data);
           alert('Image saved successfully!');
       } catch (error) {
