@@ -1,23 +1,27 @@
 import React, { useState } from 'react';
 import Cropper from 'react-easy-crop';
 
+// ManualCrop component for cropping an image with customizable aspect ratio
 export const ManualCrop = ({ imageSrc, onCropParametersChange }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [height, setHeight] = useState(1); // Default height ratio
   const [width, setWidth] = useState(1);  // Default width ratio
 
+  // Handler function when cropping is completed, passes the cropped area dimensions
   const onCropCompleteHandler = (_, croppedAreaPixels) => {
     if (onCropParametersChange) {
       onCropParametersChange(croppedAreaPixels);
     }
   };
 
+  // Handler function to update the height ratio based on user input
   const handleHeightChange = (event) => {
     const value = parseFloat(event.target.value);
     setHeight(value > 0 ? value : 1); // Ensure height is always positive
   };
 
+  // Handler function to update the width ratio based on user input
   const handleWidthChange = (event) => {
     const value = parseFloat(event.target.value);
     setWidth(value > 0 ? value : 1); // Ensure width is always positive

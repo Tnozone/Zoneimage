@@ -5,16 +5,47 @@
     padding: 16px;
     background-color: var(--page-color);
     border-radius: 10px;
+    direction: rtl;
+}
+
+.gallery-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .gallery-item img {
-    width: 100%;
+    width: auto;
     height: auto;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    max-height: 300px;
+    margin-bottom: 2rem;
 }
 
 .gallery p {
     font-size: var(--font-size-medium);
     color: var(--text-color);
+}
+
+.gallery-item button {
+    background-color: var(--color-red);
+    color: var(--color-white);
+    font-size: var(--font-size-medium);
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.gallery-item button:hover {
+    background-color: var(--color-dark-red);
+}
+
+.gallery-item button:active {
+    transform: scale(0.95);
 }

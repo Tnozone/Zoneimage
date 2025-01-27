@@ -5,29 +5,19 @@ import logo from '../assets/Zoneimages-logo.png';
 import eyeBlack from '../assets/eye-icon-black.png';
 import eyeWhite from '../assets/eye-icon-white.png';
 import { toggleTheme, loadSavedTheme } from '../utils/darkMode.js';
+import { checkLoginState } from '../utils/checkAuth.js';
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [currentImage, setCurrentImage] = useState(eyeBlack);
 
-  const checkLoginState = () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-      const storedUsername = localStorage.getItem('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-      }
-    } else {
-      setIsLoggedIn(false);
-      setUsername('');
-    }
-  };
 
   useEffect(() => {
     // Check login state on component mount
-    checkLoginState();
+    const { isLoggedIn, username } = checkLoginState();
+    setIsLoggedIn(isLoggedIn);
+    setUsername(username || '');
 
     // Optional: Listen to localStorage changes to update login state
     window.addEventListener('storage', checkLoginState);

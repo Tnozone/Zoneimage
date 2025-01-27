@@ -1,12 +1,7 @@
-import { Storage } from '@google-cloud/storage';
+import { bucket } from '../lib/googleCloudStorage.js';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../lib/mongodb.js';
-
-const storage = new Storage({
-    keyFilename: './cloudkey.json',
-});
-const bucketName = 'zoneimages_saved';
-const bucket = storage.bucket(bucketName);
+import sharp from 'sharp';
 
 /**
  * Saves an image to Google Cloud Storage and stores its reference in MongoDB.
@@ -21,18 +16,28 @@ export async function saveImage(imageUrl, userId) {
     }
 
     try {
-        // Generate a unique file name
-        const filename = `images/${uuidv4()}.jpg`;
+        // Remove base64 prefix if it exists
+        const base64Image = imageUrl.replace(/^data:image\/\w+;base64,/, '');
+
+        // Convert base64 to buffer
+        const buffer = Buffer.from(base64Image, 'base64');
+
+        // Use sharp to detect image format
+        const image = sharp(buffer);
+        const metadata = await image.metadata();
+
+        // Generate a unique filename with the correct extension
+        const extension = metadata.format;
+        const filename = `images/${uuidv4()}.${extension}`;
 
         // Upload the image to the bucket
         const file = bucket.file(filename);
-        const buffer = Buffer.from(imageUrl, 'base64');
         await file.save(buffer, {
-            metadata: { contentType: 'image/jpeg' },
+            metadata: { contentType: 'image/${extension}' },
         });
 
         // Get the public URL
-        const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
 
         // Save the public URL to the database
         const db = await getDb();

@@ -1,20 +1,22 @@
 import './Editor.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { removeBackground } from '@imgly/background-removal';
-import { fillTransparency } from '../fillTransparency.js';
+import { fillTransparency } from '../utils/fillTransparency.js';
 import { invertColors } from '../utils/InvertColors.js';
 import { convertToBlackAndWhite } from '../utils/BlackAndWhite.js';
 import { adjustSaturation } from '../utils/AdjustSaturation.js';
 import { autoCrop as performAutoCrop } from '../utils/AutoCrop.js';
-import { ManualCrop } from '../ManualCrop.js';
+import { ManualCrop } from '../utils/ManualCrop.js';
 import { setCropping } from '../utils/setCropping.js';
 import { scaleImage } from '../utils/scaleImage.js';
+import { checkLoginState } from '../utils/checkAuth.js'; 
 
 function Editor() {
     const [image, setImage] = useState(null); // Original image
     const [fileName, setFileName] = useState("Upload Image"); // file name
     const [processedImage, setProcessedImage] = useState(null); // Processed image
+    const [isLoggedIn, setIsLoggedIn] = useState(false); //loggin state
     const [backgroundRemoval, setBackgroundRemoval] = useState(false); // Checkbox state for background removal
     const [colorFill, setColorFill] = useState("#ffffff"); // Color for filling transparent background
     const [invert, setInvert] = useState(false); // Checkbox state for color inversion
@@ -34,6 +36,11 @@ function Editor() {
     const [showProgressBar, setShowProgressBar] = useState(false);
   
     const fillThreshold = 150; // Fixed fill threshold for less aggressive filling
+
+    useEffect(() => {
+      const loginStatus = checkLoginState();  // Assume this function returns a boolean value indicating login state
+      setIsLoggedIn(loginStatus);
+    }, []);
   
     // Handle image upload
     const handleImageUpload = (event) => {
@@ -55,14 +62,22 @@ function Editor() {
     // Function to save the processed image to the server
     const handleSaveImage = async () => {
       try {
-        // Retrieve the authentication token from localStorage
+          // Convert the final image to a Blob
+          const finalBlob = await fetch(processedImage).then(res => res.blob());
+  
+          // Convert the Blob to base64
+          const base64Image = await convertBlobToBase64(finalBlob);
+  
+          // Retrieve the authentication token from localStorage
           const token = localStorage.getItem('token');
+  
           // Make a POST request to the server to save the image
           const response = await axios.post(
               'http://localhost:5000/api/images/save',
-              { imageUrl: processedImage },
+              { imageUrl: base64Image },
               { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
           );
+  
           // Log the server response for debugging
           console.log('Server response:', response.data);
           alert('Image saved successfully!');
@@ -70,7 +85,18 @@ function Editor() {
           console.error('Error saving image:', error);
           alert('Failed to save the image.');
       }
-  }; 
+  };
+  
+  
+  // Utility function to convert Blob to Base64
+  const convertBlobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]); // Remove the prefix
+        reader.onerror = reject;
+        reader.readAsDataURL(blob); // Read Blob as Data URL
+    });
+  };
   
     // Handle checkbox toggle for background removal
     const handleBackgroundRemovalChange = () => {
@@ -404,7 +430,9 @@ function Editor() {
               <div>
                 <h3>Processed Image:</h3>
                 <img src={processedImage} alt="Processed" style={{ maxWidth: '100%' }} />
-                <button onClick={handleSaveImage}>Save Image</button>
+                {isLoggedIn && (
+                  <button onClick={handleSaveImage}>Save Image</button>
+                )}
               </div>
             )}
           </div>

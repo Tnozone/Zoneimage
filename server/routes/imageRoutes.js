@@ -1,16 +1,25 @@
 import express from 'express';
 import { saveImage } from '../services/savedImages.js';
+import { fetchUserImages } from '../services/fetch.js';
+import { deleteImage } from '../services/deleteImg.js';
 import { authenticate } from '../middleware/authenticate.js';
-import { getDb } from '../lib/mongodb.js';
+import { Storage } from '@google-cloud/storage';
+
 
 const router = express.Router();
 
+const storage = new Storage({
+    keyFilename: './cloudkey.json',
+});
+const bucketName = 'zoneimages_saved';
+const bucket = storage.bucket(bucketName);
+
 router.use(authenticate);
 
+//save the image to storage
 router.post('/save', async (req, res) => {
   const { imageUrl } = req.body;
 
-  // Assuming `req.user.id` is populated by middleware (e.g., from a JWT token or session)
   const userId = req.user?.id;
 
   if (!userId) {
@@ -35,37 +44,49 @@ router.post('/save', async (req, res) => {
   }
 });
 
-router.get('/images', async (req, res) => {
-  console.log('Handling GET /api/images');
+//fetch image to display in the gallery
+router.get('/', async (req, res) => {
+    console.log('Handling GET /api/images');
 
-  // Assuming `req.user.id` is populated by authentication middleware
-  const userId = req.user?.id;
+    const userId = req.user?.id;
+    console.log('User ID:', userId);
 
-  if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized: User ID is required' });
-  }
+    if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized: User ID is required' });
+    }
 
-  try {
-      // Get MongoDB connection and query the images collection
-      const db = await getDb();
-      const savedImages = db.collection('savedImages');
+    try {
+        const imageUrls = await fetchUserImages(userId);
+        console.log('Fetched image URLs:', imageUrls);
 
-      // Find images where `userId` matches the logged-in user
-      const images = await savedImages.find({ userId }).toArray();
+        res.status(200).json({ images: imageUrls });
+    } catch (error) {
+        console.error(`Failed to fetch images: ${error.message}`);
+        res.status(500).json({ message: 'Failed to fetch images', error: error.message });
+    }
+});
 
-      // Extract public URLs from the images
-      const imageUrls = images.map(image => image.imageUrl);
+// DELETE request to remove image
+router.delete('/delete', async (req, res) => {
+    try {
+        const { imageUrl } = req.body;
 
-      console.log("Fetched images for user:", userId, imageUrls);
+        if (!imageUrl) {
+            return res.status(400).json({ success: false, message: 'Image URL is required' });
+        }
 
-      res.status(200).json({ images: imageUrls });
-  } catch (error) {
-      console.error(`[Error] Failed to fetch images for user ${userId}. Details:`, {
-          message: error.message,
-          stack: error.stack,
-      });
-      res.status(500).json({ message: 'Failed to fetch images', error: error.message });
-  }
+        // Call the deleteImage service to handle the deletion
+        const result = await deleteImage(imageUrl);
+
+        if (result.success) {
+            return res.status(200).json({ success: true, message: result.message });
+        } else {
+            return res.status(500).json({ success: false, message: result.message });
+        }
+    } catch (error) {
+        console.error('Error in delete route:', error);
+        return res.status(500).json({ success: false, message: 'An error occurred' });
+    }
 });
 
 export default router;

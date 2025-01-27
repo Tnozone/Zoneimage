@@ -1,3 +1,8 @@
+/**
+ * Converts a hex color value to RGB format.
+ * @param {string} hex - The hex color string (e.g., '#ff5733').
+ * @returns {Object} An object with the RGB values {r, g, b}.
+ */
 const hexToRgb = (hex) => {
     const bigint = parseInt(hex.slice(1), 16);
     return {
@@ -19,15 +24,15 @@ const hexToRgb = (hex) => {
     const data = imageData.data;
     const fillRgb = hexToRgb(fillColor);
   
-    // Loop through all the pixels and fill them based on their transparency level
+    // Iterate pixels and fill them based on their transparency level
     for (let i = 0; i < data.length; i += 4) {
-      const alpha = data[i + 3];  // Alpha channel
+      const alpha = data[i + 3]; 
   
       // If the pixel is semi-transparent (alpha < 255) and below the threshold, fill it with the color
       if (alpha < 255 && alpha <= fillThreshold) {
-        data[i] = fillRgb.r;   // Red
-        data[i + 1] = fillRgb.g; // Green
-        data[i + 2] = fillRgb.b; // Blue
+        data[i] = fillRgb.r;
+        data[i + 1] = fillRgb.g;
+        data[i + 2] = fillRgb.b;
         data[i + 3] = 255; // Set alpha to 255 (fully opaque)
       }
     }
