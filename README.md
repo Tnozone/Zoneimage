@@ -1,50 +1,50 @@
 # Zoneimages
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Image editing site to modify uplaoded pictures.
 
-## Available Scripts
+![exapmle iamge](/src/assets/example-photo.png "Before and After")
 
-In the project directory, you can run:
+## Contributors
 
-### `npm start`
+[Maxime Nocque](https://github.com/Tnozone)
+Cohort 21 [Holberton School](https://www.holbertonschool.com/)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Technologies
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**Front End**
+* React
 
-### `npm test`
+**Back End**
+* Node.js
+* Express
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Databases**
+* Mongodb Atlas - user information
+* Google Cloud Storage - image storage
 
-### `npm run build`
+**Third Party Services**
+*[background-removal-js](https://github.com/imgly/background-removal-js)
+*[face-api.js](https://github.com/justadudewhohacks/face-api.js)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Features
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+* Image background removal
+* New colored backgrounds
+* Image scaling
+* Image cropping
+* Image color inversion
+* Image grayscale
+* Image saturation and desaturation
+* Save images to cloud storage and display to gallery page
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## How to use
 
-### `npm run eject`
+On the Edit page, upload pictures witht he "upload" button. Check the desired modifications with the toggles. Click the "generate" button. Your modified image will appear on the page.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**Note:** 
+* The new background color defaults to white.
+* The automatic cropping option is for portraits and will center in on the face in the photo. If the image has no face detected, it will remain uncropped.
+* When using the manual cropping option, you can change the height-to-width ratio with the number inputs and zoom in with your scroll wheel.
+* The image scaling uses the inputs to either height or width.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+If you have registered an identification and logged in, you can save the image to storage with the "Save Image" button that will appear beneath your modified image. Navigate to the Gallery page to view all of your saved images. Delete any of your images with the delete button underneath.
