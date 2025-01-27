@@ -2,6 +2,7 @@
 
 Image editing site to modify uplaoded pictures.
 
+![logo](/src/assets/Zoneimages-logo.png "logo")
 ![exapmle iamge](/src/assets/example-photo.png "Before and After")
 
 ## Contributors
