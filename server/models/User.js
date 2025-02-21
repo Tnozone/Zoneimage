@@ -1,11 +1,14 @@
-import mongoose from 'mongoose';
+import { getDb } from '../lib/mongodb.js';
 
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String
-});
+async function findUserByEmail(email) {
+  const db = await getDb();
+  const user = await db.collection('users').findOne({ email });
+  return user;
+}
 
-const User = mongoose.model('User', userSchema);
+async function deleteUserById(userId) {
+  const db = await getDb();
+  await db.collection('users').deleteOne({ _id: userId });
+}
 
-export default User;
+export { findUserByEmail, deleteUserById };

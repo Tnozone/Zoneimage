@@ -1,6 +1,7 @@
 html {
 	scroll-behavior: smooth;
 	font-size: 62.5%;
+  height: 100%;
 }
 
 :root {
@@ -14,6 +15,8 @@ html {
   --color-grey: #a9a9a9;
   --color-red: #dc143c;
   --color-dark-red: #ae0c00;
+  --color-forest-green: #006E33;
+  --color-light-green: #B7EBBD;
   --font-size-small: 1.2rem;
 	--font-size-medium: 1.6rem;
 	--font-size-large: 1.8rem;

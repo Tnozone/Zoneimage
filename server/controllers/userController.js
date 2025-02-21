@@ -1,50 +1,46 @@
-import User from '../models/User.js';
 import bcrypt from 'bcrypt';
-import { Storage } from '@google-cloud/storage';
+import { bucket } from '../lib/googleCloudStorage.js';
 import { getDb } from '../lib/mongodb.js';
-
-// Initialize Google Cloud Storage
-const storage = new Storage({
-    keyFilename: './cloudkey.json', // Path to your Google Cloud service account key
-});
-const bucketName = 'zoneimages_saved';
-const bucket = storage.bucket(bucketName);
 
 export const deleteUser = async (req, res) => {
     const { email, password } = req.body;
+    console.log("Attempting to delete user with email:", email);
 
     try {
         // Find the user by email
-        const user = await User.findOne({ email });
+        const db = await getDb();
+        const savedImages = db.collection('savedImages');
+
+        // Find user by email
+        const user = await db.collection('users').findOne({ email });
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: 'User not found' });
         }
 
         // Compare the password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Incorrect password' });
+        return res.status(400).json({ message: 'Incorrect password' });
         }
-
-        // Connect to MongoDB and query user's images
-        const db = await getDb();
-        const savedImages = db.collection('savedImages');
 
         // Find all images belonging to the user
         const userImages = await savedImages.find({ userId: user._id.toString() }).toArray();
 
         // Delete each image from the storage bucket
         const deletePromises = userImages.map(async (image) => {
-            const fileName = image.imageUrl.split(`${bucketName}/`)[1]; // Extract the file name
+        try {
+            const fileName = image.imageUrl.split(`${bucketName}/`)[1];
+            if (fileName) {
             const file = bucket.file(fileName);
-
-            try {
-                await file.delete(); // Delete the file from the bucket
-                console.log(`Deleted file: ${fileName}`);
-            } catch (err) {
-                console.error(`Failed to delete file ${fileName}:`, err.message);
+            await file.delete();
+            console.log(`Deleted file: ${fileName}`);
+            } else {
+            console.warn(`Invalid image URL: ${image.imageUrl}`);
             }
+        } catch (err) {
+            console.error(`Failed to delete image: ${image.imageUrl}`, err);
+        }
         });
 
         // Wait for all delete operations to complete
@@ -54,7 +50,7 @@ export const deleteUser = async (req, res) => {
         await savedImages.deleteMany({ userId: user._id.toString() });
 
         // Delete the user from the database
-        await User.findOneAndDelete({ email });
+        await db.collection('users').deleteOne({ _id: user._id });
 
         res.status(200).json({ message: 'User and their images deleted successfully' });
     } catch (error) {

@@ -13,11 +13,21 @@ const DeleteAccount = () => {
 
     const handleDelete = async () => {
         try {
-            // Make a POST request to delete the account
-            const response = await axios.post('/api/users/delete', { email, password });
-            setMessage('Your account has been deleted.');
-            // Redirect to login page after successful deletion
-            navigate('/login');
+            // Step 1: Verify user credentials
+            const verifyResponse = await axios.post('http://localhost:5000/api/users/verify-user', { email, password });
+    
+            if (verifyResponse.data.success) {
+                const userId = verifyResponse.data.userId; // Get userId from the response
+    
+                // Step 2: Call the delete route
+                await axios.delete(`http://localhost:5000/api/users/delete-user/${userId}`);
+    
+                setMessage('Your account has been deleted.');
+                localStorage.removeItem('userId'); // Clear user data
+                navigate('/login'); // Redirect to login page
+            } else {
+                setMessage('Invalid email or password. Please try again.');
+            }
         } catch (error) {
             setMessage('Error deleting account. Please try again.');
         }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Registry.css';
 import logo from '../assets/Zoneimages-logo.png';
@@ -9,6 +10,7 @@ function Registry() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,8 +21,9 @@ function Registry() {
         }
 
         try {
-        const response = await axios.post('/api/auth/register', { name, email, password });
-        setMessage('Registration successful! Please log in.');
+            await axios.post('/api/auth/register', { name, email, password });
+            setMessage('Registration successful! Please log in.');
+            navigate('/Login');
         } catch (error) {
             const errorMsg = error.response?.data?.message || 'An error occurred.';
             setMessage(errorMsg);
